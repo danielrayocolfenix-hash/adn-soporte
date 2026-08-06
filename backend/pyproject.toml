@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 88
+extend-exclude = "migrations"
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip = ["migrations", ".venv", "venv"]
+known_first_party = ["apps", "config", "shared"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.testing"
+python_files = ["test_*.py", "*_test.py"]
+testpaths = ["apps", "tests"]
+addopts = "--reuse-db"
