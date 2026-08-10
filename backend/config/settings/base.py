@@ -12,6 +12,17 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="unsafe-secret-key-for-local-dev-o
 DEBUG = env.bool("DJANGO_DEBUG", default=False)
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
+# Ambiente lógico reportado por el monitor de errores (Development/Staging/Production).
+_default_environment = "Development" if DEBUG else "Production"
+APP_ENVIRONMENT = env("APP_ENVIRONMENT", default=_default_environment)
+
+# Hosts a los que el monitor de errores puede hacer una petición de
+# diagnóstico ("Probar endpoint" desde un ticket QA). Lista blanca explícita
+# para evitar que el backend se use como proxy hacia hosts arbitrarios (SSRF).
+PROBE_ALLOWED_HOSTS = env.list(
+    "PROBE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
+)
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -33,6 +44,7 @@ LOCAL_APPS = [
     "apps.usuarios",
     "apps.roles",
     "apps.qa",
+    "apps.errores",
     "apps.seguimiento",
     "apps.dashboard",
     "apps.notificaciones",

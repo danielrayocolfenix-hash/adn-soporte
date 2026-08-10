@@ -6,3 +6,6 @@ class SeguimientoConfig(AppConfig):
     name = "apps.seguimiento"
     label = "seguimiento"
     verbose_name = "Seguimiento"
+
+    def ready(self) -> None:
+        from apps.seguimiento.infraestructure import signals  # noqa: F401

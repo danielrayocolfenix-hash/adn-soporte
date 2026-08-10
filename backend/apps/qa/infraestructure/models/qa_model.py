@@ -10,6 +10,7 @@ CATEGORIA_CHOICES = [
     ("ui_design", "Diseño / UI"),
     ("ux_flow", "Comportamiento / UX"),
     ("qa_test", "Prueba Manual QA"),
+    ("server_error", "Error de Servidor / Sistema"),
 ]
 
 AMBIENTE_CHOICES = [
@@ -27,6 +28,7 @@ class QaModel(models.Model):
     ambiente = models.CharField(max_length=20, choices=AMBIENTE_CHOICES, default="Staging")
     figma_url = models.URLField(blank=True, default="")
     device_or_browser = models.CharField(max_length=150, blank=True, default="")
+    codigo_error = models.CharField(max_length=50, blank=True, default="")
     pasos_reproduccion = models.TextField(blank=True, default="")
     resultado_esperado = models.TextField(blank=True, default="")
     resultado_obtenido = models.TextField(blank=True, default="")

@@ -1,0 +1,406 @@
+{
+  "common": {
+    "appName": "ADN-Soporte",
+    "save": "Salvar",
+    "saveChanges": "Salvar Alterações",
+    "saving": "Salvando...",
+    "saved": "Salvo!",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "add": "Adicionar",
+    "create": "Criar",
+    "search": "Buscar",
+    "loading": "Carregando...",
+    "back": "Voltar",
+    "confirm": "Confirmar",
+    "close": "Fechar",
+    "export": "Exportar",
+    "viewAll": "Ver tudo",
+    "all": "Todos",
+    "yes": "Sim",
+    "no": "Não",
+    "priority": {
+      "critica": "Crítica",
+      "alta": "Alta",
+      "media": "Média",
+      "baja": "Baixa"
+    },
+    "languages": {
+      "es": "Español",
+      "en": "English",
+      "pt": "Português"
+    }
+  },
+  "nav": {
+    "menu": "Menu",
+    "support": "Suporte",
+    "groups": {
+      "dashboard": "Painel",
+      "dashboardResumen": "Resumo",
+      "tickets": "Tickets",
+      "ticketsListado": "Lista",
+      "ticketsNuevo": "Novo ticket",
+      "qa": "QA",
+      "qaListado": "Lista",
+      "qaNueva": "Novo teste",
+      "qaHistorial": "Histórico",
+      "tareas": "Tarefas",
+      "tareasListado": "Lista",
+      "configuracion": "Configurações",
+      "configuracionGeneral": "Geral",
+      "centroAyuda": "Central de Ajuda",
+      "centroAyudaManual": "Manual do usuário"
+    },
+    "version": "v0.1",
+    "expandMenu": "Expandir menu",
+    "collapseMenu": "Recolher menu",
+    "closeMobileMenu": "Fechar menu móvel",
+    "brandExpandHint": "ADN-Soporte (Clique para expandir)"
+  },
+  "topbar": {
+    "openMenu": "Abrir menu",
+    "searchPlaceholder": "Buscar na plataforma...",
+    "clearSearch": "Limpar busca",
+    "language": "Mudar idioma",
+    "theme": "Alternar tema",
+    "notifications": {
+      "open": "Ver notificações",
+      "title": "Notificações",
+      "new": "Novas",
+      "viewAll": "Ver todas as notificações",
+      "item1Title": "Novo usuário registrado",
+      "item1Time": "Há 5 minutos",
+      "item2Title": "Relatório mensal gerado com sucesso",
+      "item2Time": "Há 1 hora"
+    },
+    "profile": {
+      "menu": "Menu do usuário",
+      "myProfile": "Meu Perfil",
+      "settings": "Ajustes",
+      "logout": "Sair"
+    }
+  },
+  "auth": {
+    "title": "ADN-Soporte",
+    "subtitle": "Entre com sua conta para continuar.",
+    "username": "Usuário",
+    "password": "Senha",
+    "submit": "Entrar",
+    "submitting": "Entrando...",
+    "error": "Usuário ou senha incorretos."
+  },
+  "dashboard": {
+    "title": "Painel Geral",
+    "subtitle": "Visão geral da estabilidade do software, cobertura de testes e suporte a clientes.",
+    "range24h": "Últimas 24 horas",
+    "range7d": "Últimos 7 dias",
+    "range30d": "Últimos 30 dias",
+    "newTest": "Novo Teste",
+    "kpi": {
+      "successRate": "Taxa de Sucesso QA",
+      "successRateNote": "vs. semana anterior",
+      "testsRun": "Testes Executados",
+      "testsRunNote": "128 execuções automáticas",
+      "activeTickets": "Tickets Ativos",
+      "activeTicketsCritical": "1 Crítico",
+      "activeTicketsNote": "Atenção necessária",
+      "criticalErrors": "Erros Críticos Ativos",
+      "criticalErrorsNote": "No ambiente de Staging"
+    },
+    "tickets": {
+      "title": "Últimas Novidades e Tickets de Clientes",
+      "subtitle": "Incidentes, dúvidas e solicitações reportadas pelos usuários em produção.",
+      "viewHelpDesk": "Ver central de ajuda →",
+      "convertToQa": "Converter em teste QA ou acompanhar"
+    },
+    "health": {
+      "title": "Saúde do Sistema (QA)",
+      "subtitle": "Detalhamento do comportamento geral dos testes nesta semana.",
+      "stable": "Sistema Estável",
+      "approved": "Aprovados",
+      "failed": "Falharam",
+      "pending": "Pendentes"
+    },
+    "runsFeed": {
+      "title": "Últimas Execuções QA"
+    },
+    "ticketStatus": {
+      "Abierto": "Aberto",
+      "En Proceso": "Em Andamento",
+      "Resuelto": "Resolvido"
+    },
+    "ticketCategory": {
+      "Error de Sistema": "Erro de Sistema",
+      "Consulta": "Consulta",
+      "Fallo de Integración": "Falha de Integração",
+      "Solicitud QA": "Solicitação QA"
+    }
+  },
+  "qa": {
+    "categoria": {
+      "ui_design": "Design / UI",
+      "ux_flow": "Comportamento / UX",
+      "qa_test": "Teste Manual QA"
+    },
+    "categoriaDesc": {
+      "ui_design": "Desalinhamentos, cores incorretas, padding ou tipografia fora do padrão.",
+      "ux_flow": "Fluxos confusos, modais travados ou feedback visual ausente.",
+      "qa_test": "Cenário de validação funcional de rotina para a suíte de regressão."
+    },
+    "list": {
+      "title": "Testes QA",
+      "subtitle": "Relatórios de design, UX e testes manuais registrados pela equipe.",
+      "newTest": "Novo teste",
+      "searchPlaceholder": "Buscar por título...",
+      "loading": "Carregando testes QA...",
+      "loadError": "Não foi possível carregar os testes QA. Verifique se o backend está em execução e se você está autenticado.",
+      "empty": "Ainda não há testes QA registrados.",
+      "columnTitulo": "Título",
+      "columnCategoria": "Categoria",
+      "columnModulo": "Módulo / Ambiente",
+      "columnPrioridad": "Prioridade",
+      "columnResponsable": "Responsável",
+      "columnCreado": "Criado",
+      "columnAcciones": "Ações",
+      "deleteConfirm": "Excluir o teste \"{{titulo}}\"? Esta ação não pode ser desfeita."
+    },
+    "historial": {
+      "title": "Histórico de Testes QA",
+      "subtitle": "Registro cronológico de execuções passadas, relatórios de auditoria e métricas de estabilidade.",
+      "exportReport": "Exportar Relatório",
+      "kpiTotal": "Total de Execuções",
+      "kpiTotalNote": "+12,5% este mês",
+      "kpiSuccessRate": "Taxa de Sucesso",
+      "kpiSuccessRateNote": "Meta: 90%",
+      "kpiAvgDuration": "Duração Média",
+      "kpiAvgDurationNote": "Por execução",
+      "kpiCriticalFailures": "Falhas Críticas Detectadas",
+      "kpiCriticalFailuresNote": "Requer atenção",
+      "searchPlaceholder": "Buscar por ID, suíte ou usuário...",
+      "triggerAll": "Todos",
+      "triggerAuto": "Auto (CI/CD)",
+      "triggerManual": "Manual",
+      "statusAll": "Status",
+      "statusPassed": "Passou",
+      "statusFailed": "Falhou",
+      "statusAborted": "Cancelado",
+      "columnSuite": "ID / Suíte Executada",
+      "columnTrigger": "Gatilho",
+      "columnResults": "Resultados",
+      "columnDuration": "Duração",
+      "columnStatus": "Status",
+      "columnActions": "Ações",
+      "viewLog": "Ver log de execução",
+      "rerun": "Reexecutar Suíte",
+      "empty": "Nenhum registro no histórico corresponde aos filtros aplicados."
+    },
+    "form": {
+      "newTitle": "Novo Relatório de Qualidade",
+      "newSubtitle": "Registre discrepâncias visuais de design, inconsistências de UX ou casos de teste manuais.",
+      "editTitle": "Editar Relatório de Qualidade",
+      "backToList": "Voltar à lista",
+      "publish": "Publicar Incidência",
+      "publishing": "Publicando...",
+      "submitError": "Não foi possível salvar o relatório. Verifique os dados e tente novamente.",
+      "updateError": "Não foi possível salvar as alterações. Tente novamente.",
+      "loadError": "Não foi possível carregar este teste QA.",
+      "loading": "Carregando teste QA...",
+      "step1Category": "1. Selecione a Categoria *",
+      "categoryOnly": "Categoria *",
+      "step2Details": "2. Detalhes da Incidência",
+      "detailsOnly": "Detalhes da Incidência",
+      "titleLabel": "Título do Relatório *",
+      "titlePlaceholderUi": "Ex: O botão 'Pagar' ultrapassa a barra de navegação na visão mobile",
+      "titlePlaceholderOther": "Ex: O modal de confirmação não fecha após concluir a ação",
+      "moduloLabel": "Módulo Afetado",
+      "moduloAutenticacion": "Autenticação",
+      "moduloFacturacion": "Faturamento / Checkout",
+      "moduloPerfil": "Perfil do Usuário",
+      "moduloNotificaciones": "Notificações",
+      "moduloDashboard": "Painel Principal",
+      "ambienteLabel": "Ambiente",
+      "ambienteStaging": "Staging (STG)",
+      "ambienteDevelopment": "Development (DEV)",
+      "ambienteProduction": "Production (PROD)",
+      "prioridadLabel": "Prioridade",
+      "estadoActualLabel": "Status atual",
+      "figmaLabel": "Link do Figma / Especificação Visual",
+      "deviceLabel": "Dispositivo / Navegador Testado",
+      "devicePlaceholder": "Ex: Safari iOS 17 / iPhone 13 Pro",
+      "step3Steps": "3. Passos para Reproduzir a Discrepância",
+      "stepsOnly": "Passos para Reproduzir",
+      "addStep": "Adicionar Passo",
+      "stepPlaceholder": "Descreva a ação executada...",
+      "expectedLabel": "Comportamento / Design Esperado",
+      "expectedPlaceholder": "Segundo o Figma, o botão deve ter padding de 16px e alinhamento centralizado...",
+      "actualLabel": "Comportamento / Design Atual",
+      "actualPlaceholder": "O botão transborda para a direita, ocupando 100% da largura disponível...",
+      "step4Evidence": "4. Evidência Visual: Antes e Depois",
+      "evidenceOnly": "Evidência Visual: Antes e Depois",
+      "imageBefore": "Como estava (antes)",
+      "imageAfter": "Como ficou (depois)",
+      "imageHint": "PNG, JPG ou WEBP até 10MB"
+    }
+  },
+  "tareas": {
+    "title": "Tarefas de Desenvolvimento",
+    "subtitle": "Quadro Kanban de tarefas: do desenvolvimento ao deploy e aprovação do QA.",
+    "addNew": "Adicionar nova tarefa",
+    "allTasks": "Todas as tarefas",
+    "searchPlaceholder": "Buscar por título...",
+    "loading": "Carregando tarefas...",
+    "loadError": "Não foi possível carregar as tarefas. Verifique se o backend está em execução e se você está autenticado.",
+    "empty": "Sem tarefas",
+    "deleteTask": "Excluir tarefa",
+    "deleteConfirm": "Excluir a tarefa \"{{titulo}}\"? Esta ação não pode ser desfeita.",
+    "columns": {
+      "hacer": "A Fazer",
+      "en_curso": "Em Andamento",
+      "en_proceso": "Em Revisão",
+      "terminado": "Concluído",
+      "cerrado": "Fechado"
+    },
+    "modal": {
+      "title": "Nova tarefa",
+      "createError": "Não foi possível criar a tarefa. Tente novamente.",
+      "tituloLabel": "Título",
+      "descripcionLabel": "Descrição",
+      "ramaLabel": "Branch do GitHub",
+      "ramaPlaceholder": "feature/minha-branch",
+      "prioridadLabel": "Prioridade",
+      "prUrlLabel": "URL do Pull Request",
+      "fechaLimiteLabel": "Data limite",
+      "cancel": "Cancelar",
+      "create": "Criar tarefa"
+    }
+  },
+  "configuracion": {
+    "title": "Configurações Gerais",
+    "subtitle": "Gerencie as preferências do projeto, segurança, integrações e notificações.",
+    "tabs": {
+      "general": "Geral",
+      "notificaciones": "Notificações",
+      "seguridad": "Segurança & Acesso",
+      "integraciones": "Integrações & Webhooks"
+    },
+    "general": {
+      "title": "Preferências do Projeto",
+      "subtitle": "Ajuste os principais parâmetros de interface e comportamento.",
+      "projectNameLabel": "Nome do Projeto",
+      "defaultEnvLabel": "Ambiente Padrão",
+      "languageLabel": "Idioma da Interface"
+    },
+    "notificaciones": {
+      "title": "Alertas e Notificações",
+      "subtitle": "Escolha quando e onde receber avisos sobre os testes QA.",
+      "emailOnFailure": "Notificar falhas por E-mail",
+      "emailOnFailureDesc": "Receba um e-mail imediato quando um teste crítico falhar.",
+      "emailDailyDigest": "Resumo diário de execução",
+      "emailDailyDigestDesc": "Um relatório consolidado todas as manhãs.",
+      "slackAlerts": "Alertas no Canal do Slack / Teams",
+      "slackAlertsDesc": "Envia eventos de execução para canais de suporte.",
+      "webhookEvents": "Disparar Webhooks em tempo real",
+      "webhookEventsDesc": "Notifica endpoints externos em eventos de QA."
+    },
+    "seguridad": {
+      "title": "Segurança e Tokens",
+      "subtitle": "Gerencie credenciais de API e políticas de autenticação.",
+      "apiKeyLabel": "Chave de API do Projeto",
+      "copy": "Copiar",
+      "sessionTimeoutLabel": "Expiração de Sessão (Minutos)"
+    },
+    "integraciones": {
+      "title": "Integrações de CI/CD",
+      "subtitle": "Conecte o sistema de QA ao seu pipeline de deploy contínuo.",
+      "connected": "Conectado",
+      "disconnected": "Desconectado"
+    }
+  },
+  "perfil": {
+    "active": "Ativo",
+    "changePhoto": "Alterar foto de perfil",
+    "tabs": {
+      "personal": "Informações Pessoais",
+      "security": "Segurança e Acesso",
+      "preferences": "Preferências"
+    },
+    "personal": {
+      "title": "Dados Pessoais e Profissionais",
+      "subtitle": "Atualize seus dados de contato e as informações visíveis para a equipe.",
+      "nameLabel": "Nome Completo",
+      "emailLabel": "E-mail",
+      "roleLabel": "Cargo / Função",
+      "departmentLabel": "Módulo / Área",
+      "bioLabel": "Biografia / Notas",
+      "adminRole": "Administrador",
+      "agentRole": "Agente de Suporte"
+    },
+    "security": {
+      "title": "Alterar Senha",
+      "subtitle": "Use uma senha segura com pelo menos 8 caracteres.",
+      "currentPassword": "Senha Atual",
+      "newPassword": "Nova Senha",
+      "confirmPassword": "Confirmar Nova Senha",
+      "twoFactorTitle": "Autenticação de Dois Fatores (2FA)",
+      "twoFactorDesc": "Adicione uma camada extra de segurança exigindo um código a cada login."
+    },
+    "preferences": {
+      "title": "Notificações e Sistema",
+      "subtitle": "Configure como e quando deseja receber alertas do sistema.",
+      "emailNotifications": "Notificações por E-mail",
+      "emailNotificationsDesc": "Receba resumos diários de relatórios e atribuições de QA.",
+      "qaAlerts": "Alertas Críticos de UI / Falhas",
+      "qaAlertsDesc": "Notificar imediatamente quando um erro de prioridade 'Alta' for registrado.",
+      "languageLabel": "Idioma da Interface"
+    }
+  },
+  "reportes": {
+    "title": "Relatórios",
+    "description": "Módulo de relatórios — a implementar."
+  },
+  "centroAyuda": {
+    "badge": "Central de Ajuda & Documentação",
+    "heroTitle": "Como podemos ajudar você hoje?",
+    "heroSubtitle": "Encontre guias rápidos, respostas a perguntas frequentes ou entre em contato conosco diretamente.",
+    "searchPlaceholder": "Buscar perguntas, guias de UI, relatórios de QA...",
+    "quickAccess": "Acesso Rápido por Módulo",
+    "card1Title": "Reportar Falha ou UI",
+    "card1Desc": "Crie uma nova incidência ou discrepância visual de design na plataforma.",
+    "card1Cta": "Ir ao Formulário",
+    "card2Title": "Casos de Teste QA",
+    "card2Desc": "Consulte a lista geral de cenários de teste e validações.",
+    "card2Cta": "Ver Módulo",
+    "card3Title": "Configurações da Conta",
+    "card3Desc": "Gerencie suas credenciais, notificações e opções de perfil.",
+    "card3Cta": "Ir ao Meu Perfil",
+    "faqTitle": "Perguntas Frequentes",
+    "faqResults": "Mostrando {{count}} resultados",
+    "faqEmpty": "Não encontramos respostas correspondentes a \"{{query}}\".",
+    "footerTitle": "Não encontrou o que procurava?",
+    "footerSubtitle": "Nossa equipe de suporte técnico está disponível para ajudá-lo.",
+    "footerCta": "Contatar Suporte QA",
+    "faqs": {
+      "1": {
+        "category": "Relatórios & QA",
+        "question": "Como reporto uma inconsistência de design ou UI?",
+        "answer": "Vá até a seção de Qualidade (QA) e clique em 'Novo Relatório'. Selecione a categoria 'Design / UI', anexe o link do Figma/Penpot e adicione capturas ou evidências visuais do problema."
+      },
+      "2": {
+        "category": "Relatórios & QA",
+        "question": "Onde posso consultar o status de um relatório de erro?",
+        "answer": "Todos os relatórios são centralizados na visão principal de QA. Você pode filtrá-los por status (Aberto, Em Revisão, Resolvido) e por prioridade."
+      },
+      "3": {
+        "category": "Conta & Acesso",
+        "question": "Como altero minha senha ou ativo a autenticação em duas etapas?",
+        "answer": "Acesse o módulo 'Perfil' pelo menu lateral ou superior, selecione a aba 'Segurança e Acesso' e lá você poderá atualizar suas credenciais e ativar o 2FA."
+      },
+      "4": {
+        "category": "Navegação",
+        "question": "O que devo fazer se uma tela ou módulo ficar carregando indefinidamente?",
+        "answer": "Verifique sua conexão com a internet ou tente recarregar a página (`Ctrl + F5`). Se o problema persistir, verifique se há algum aviso de manutenção ativo ou notifique o suporte."
+      }
+    }
+  }
+}

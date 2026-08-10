@@ -7,7 +7,9 @@ from apps.qa.presentation.serializers.qa_serializer import QaSerializer
 
 
 class QaViewSet(viewsets.ModelViewSet):
-    queryset = QaModel.objects.select_related("responsable").all()
+    queryset = QaModel.objects.select_related("responsable").prefetch_related(
+        "errores_vinculados"
+    )
     serializer_class = QaSerializer
     permission_classes = [QaPermissions]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
