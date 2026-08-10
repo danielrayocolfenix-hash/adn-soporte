@@ -13,6 +13,7 @@ import {
   AlertTriangle,
   LifeBuoy,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { PriorityBadge } from "@/modules/dashboard/components/PriorityBadge";
@@ -23,6 +24,7 @@ import {
 } from "@/modules/dashboard/services/dashboardMockData";
 
 export function DashboardPage() {
+  const { t } = useTranslation();
   const [timeRange, setTimeRange] = useState("7d");
 
   return (
@@ -32,11 +34,10 @@ export function DashboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
             <BarChart3 className="size-6 text-emerald-500" />
-            Dashboard General
+            {t("dashboard.title")}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Visión general de la estabilidad del software, cobertura de pruebas y soporte a
-            clientes.
+            {t("dashboard.subtitle")}
           </p>
         </div>
 
@@ -47,9 +48,9 @@ export function DashboardPage() {
             onChange={(e) => setTimeRange(e.target.value)}
             className="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:border-emerald-500 shadow-xs"
           >
-            <option value="24h">Últimas 24 horas</option>
-            <option value="7d">Últimos 7 días</option>
-            <option value="30d">Últimos 30 días</option>
+            <option value="24h">{t("dashboard.range24h")}</option>
+            <option value="7d">{t("dashboard.range7d")}</option>
+            <option value="30d">{t("dashboard.range30d")}</option>
           </select>
 
           <Link
@@ -57,7 +58,7 @@ export function DashboardPage() {
             className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-sm rounded-xl transition-all shadow-sm shadow-emerald-600/20"
           >
             <Plus size={16} />
-            Nueva Prueba
+            {t("dashboard.newTest")}
           </Link>
         </div>
       </div>
@@ -67,7 +68,7 @@ export function DashboardPage() {
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Tasa de Éxito QA
+              {t("dashboard.kpi.successRate")}
             </span>
             <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-xl">
               <ShieldCheck size={18} />
@@ -79,13 +80,13 @@ export function DashboardPage() {
               <ArrowUpRight size={14} /> +2.1%
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">vs. semana anterior</p>
+          <p className="text-[11px] text-slate-400 mt-1">{t("dashboard.kpi.successRateNote")}</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Pruebas Ejecutadas
+              {t("dashboard.kpi.testsRun")}
             </span>
             <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl">
               <Activity size={18} />
@@ -97,13 +98,13 @@ export function DashboardPage() {
               <ArrowUpRight size={14} /> +14%
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">128 corridas automáticas</p>
+          <p className="text-[11px] text-slate-400 mt-1">{t("dashboard.kpi.testsRunNote")}</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Tickets Activos
+              {t("dashboard.kpi.activeTickets")}
             </span>
             <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl">
               <LifeBuoy size={18} />
@@ -112,16 +113,16 @@ export function DashboardPage() {
           <div className="mt-3 flex items-baseline justify-between">
             <h3 className="text-2xl font-bold text-amber-600 dark:text-amber-400">5</h3>
             <span className="inline-flex items-center text-xs font-semibold text-rose-500">
-              <AlertTriangle size={14} className="mr-0.5" /> 1 Crítico
+              <AlertTriangle size={14} className="mr-0.5" /> {t("dashboard.kpi.activeTicketsCritical")}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">Atención requerida</p>
+          <p className="text-[11px] text-slate-400 mt-1">{t("dashboard.kpi.activeTicketsNote")}</p>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Errores Críticos Activos
+              {t("dashboard.kpi.criticalErrors")}
             </span>
             <div className="p-2 bg-rose-500/10 text-rose-500 rounded-xl">
               <XCircle size={18} />
@@ -133,7 +134,7 @@ export function DashboardPage() {
               <ArrowDownRight size={14} /> -1
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1">En entorno de Staging</p>
+          <p className="text-[11px] text-slate-400 mt-1">{t("dashboard.kpi.criticalErrorsNote")}</p>
         </div>
       </div>
 
@@ -143,14 +144,14 @@ export function DashboardPage() {
           <div>
             <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <MessageSquare className="size-5 text-indigo-500" />
-              Últimas Novedades y Tickets de Clientes
+              {t("dashboard.tickets.title")}
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Incidencias, dudas y requerimientos reportados por los usuarios en producción.
+              {t("dashboard.tickets.subtitle")}
             </p>
           </div>
           <button className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium">
-            Ver mesa de ayuda →
+            {t("dashboard.tickets.viewHelpDesk")}
           </button>
         </div>
 
@@ -173,7 +174,7 @@ export function DashboardPage() {
                     <span className="text-[10px] font-mono text-slate-400">({ticket.id})</span>
                     <PriorityBadge priority={ticket.priority} />
                     <span className="text-[11px] px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded-md text-slate-500 dark:text-slate-400 font-medium">
-                      {ticket.category}
+                      {t(`dashboard.ticketCategory.${ticket.category}`)}
                     </span>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-300">{ticket.issue}</p>
@@ -189,7 +190,7 @@ export function DashboardPage() {
                 <button
                   type="button"
                   className="p-1.5 text-slate-400 hover:text-emerald-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                  title="Convertir a prueba QA o dar seguimiento"
+                  title={t("dashboard.tickets.convertToQa")}
                 >
                   <ArrowUpRight size={16} />
                 </button>
@@ -206,14 +207,14 @@ export function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                Salud del Sistema (QA)
+                {t("dashboard.health.title")}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Desglose del comportamiento global de las pruebas en esta semana.
+                {t("dashboard.health.subtitle")}
               </p>
             </div>
             <span className="text-xs font-mono text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
-              Sistema Estable
+              {t("dashboard.health.stable")}
             </span>
           </div>
 
@@ -229,19 +230,19 @@ export function DashboardPage() {
               <div className="flex items-center gap-2">
                 <span className="size-3 rounded-full bg-emerald-500" />
                 <span className="text-slate-600 dark:text-slate-300 font-medium">
-                  Aprobadas (82%)
+                  {t("dashboard.health.approved")} (82%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="size-3 rounded-full bg-rose-500" />
                 <span className="text-slate-600 dark:text-slate-300 font-medium">
-                  Fallidas (8%)
+                  {t("dashboard.health.failed")} (8%)
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="size-3 rounded-full bg-amber-500" />
                 <span className="text-slate-600 dark:text-slate-300 font-medium">
-                  Pendientes (6%)
+                  {t("dashboard.health.pending")} (6%)
                 </span>
               </div>
             </div>
@@ -252,13 +253,13 @@ export function DashboardPage() {
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-              Últimas Corridas QA
+              {t("dashboard.runsFeed.title")}
             </h2>
             <Link
               to="/qa/historial"
               className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
             >
-              Ver todo
+              {t("common.viewAll")}
             </Link>
           </div>
 

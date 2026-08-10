@@ -8,3 +8,4 @@ drf-spectacular>=0.27,<0.28
 psycopg[binary]>=3.2,<3.3
 celery>=5.4,<5.5
 pillow>=12.0,<12.4
+playwright>=1.62,<1.63

@@ -1,0 +1,414 @@
+{
+  "common": {
+    "appName": "ADN-Soporte",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "back": "Back",
+    "confirm": "Confirm",
+    "close": "Close",
+    "export": "Export",
+    "viewAll": "View all",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "priority": {
+      "critica": "Critical",
+      "alta": "High",
+      "media": "Medium",
+      "baja": "Low"
+    },
+    "languages": {
+      "es": "Español",
+      "en": "English",
+      "pt": "Português"
+    }
+  },
+  "nav": {
+    "menu": "Menu",
+    "support": "Support",
+    "groups": {
+      "dashboard": "Dashboard",
+      "dashboardResumen": "Overview",
+      "tickets": "Tickets",
+      "ticketsListado": "List",
+      "ticketsNuevo": "New ticket",
+      "qa": "QA",
+      "qaListado": "List",
+      "qaNueva": "New test",
+      "qaHistorial": "History",
+      "tareas": "Tasks",
+      "tareasListado": "List",
+      "configuracion": "Settings",
+      "configuracionGeneral": "General",
+      "centroAyuda": "Help Center",
+      "centroAyudaManual": "User manual"
+    },
+    "version": "v0.1",
+    "expandMenu": "Expand menu",
+    "collapseMenu": "Collapse menu",
+    "closeMobileMenu": "Close mobile menu",
+    "brandExpandHint": "ADN-Soporte (Click to expand)"
+  },
+  "topbar": {
+    "openMenu": "Open menu",
+    "searchPlaceholder": "Search the platform...",
+    "clearSearch": "Clear search",
+    "language": "Change language",
+    "theme": "Toggle theme",
+    "notifications": {
+      "open": "View notifications",
+      "title": "Notifications",
+      "new": "New",
+      "viewAll": "View all notifications",
+      "item1Title": "New user registered",
+      "item1Time": "5 minutes ago",
+      "item2Title": "Monthly report generated successfully",
+      "item2Time": "1 hour ago"
+    },
+    "profile": {
+      "menu": "User menu",
+      "myProfile": "My Profile",
+      "settings": "Settings",
+      "logout": "Log Out"
+    }
+  },
+  "auth": {
+    "title": "ADN-Soporte",
+    "subtitle": "Sign in with your account to continue.",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "error": "Incorrect username or password."
+  },
+  "dashboard": {
+    "title": "General Dashboard",
+    "subtitle": "Overview of software stability, test coverage, and customer support.",
+    "range24h": "Last 24 hours",
+    "range7d": "Last 7 days",
+    "range30d": "Last 30 days",
+    "newTest": "New Test",
+    "kpi": {
+      "successRate": "QA Success Rate",
+      "successRateNote": "vs. previous week",
+      "testsRun": "Tests Run",
+      "testsRunNote": "128 automated runs",
+      "activeTickets": "Active Tickets",
+      "activeTicketsCritical": "1 Critical",
+      "activeTicketsNote": "Attention required",
+      "criticalErrors": "Active Critical Errors",
+      "criticalErrorsNote": "In Staging environment"
+    },
+    "tickets": {
+      "title": "Latest Updates and Customer Tickets",
+      "subtitle": "Incidents, questions and requests reported by users in production.",
+      "viewHelpDesk": "View help desk →",
+      "convertToQa": "Convert to QA test or follow up"
+    },
+    "health": {
+      "title": "System Health (QA)",
+      "subtitle": "Breakdown of overall test behavior this week.",
+      "stable": "System Stable",
+      "approved": "Approved",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "runsFeed": {
+      "title": "Latest QA Runs"
+    },
+    "ticketStatus": {
+      "Abierto": "Open",
+      "En Proceso": "In Progress",
+      "Resuelto": "Resolved"
+    },
+    "ticketCategory": {
+      "Error de Sistema": "System Error",
+      "Consulta": "Inquiry",
+      "Fallo de Integración": "Integration Failure",
+      "Solicitud QA": "QA Request"
+    }
+  },
+  "qa": {
+    "categoria": {
+      "ui_design": "Design / UI",
+      "ux_flow": "Behavior / UX",
+      "qa_test": "Manual QA Test"
+    },
+    "categoriaDesc": {
+      "ui_design": "Misalignments, wrong colors, padding or typography off spec.",
+      "ux_flow": "Confusing flows, frozen modals or missing visual feedback.",
+      "qa_test": "Routine functional validation scenario for the regression suite."
+    },
+    "list": {
+      "title": "QA Tests",
+      "subtitle": "Design, UX and manual test reports logged by the team.",
+      "newTest": "New test",
+      "searchPlaceholder": "Search by title...",
+      "loading": "Loading QA tests...",
+      "loadError": "Could not load QA tests. Check that the backend is running and that you're signed in.",
+      "empty": "No QA tests registered yet.",
+      "columnTitulo": "Title",
+      "columnCategoria": "Category",
+      "columnModulo": "Module / Environment",
+      "columnPrioridad": "Priority",
+      "columnResponsable": "Owner",
+      "columnCreado": "Created",
+      "columnAcciones": "Actions",
+      "deleteConfirm": "Delete test \"{{titulo}}\"? This action cannot be undone."
+    },
+    "historial": {
+      "title": "QA Test History",
+      "subtitle": "Chronological log of past runs, audit reports and stability metrics.",
+      "exportReport": "Export Report",
+      "kpiTotal": "Total Runs",
+      "kpiTotalNote": "+12.5% this month",
+      "kpiSuccessRate": "Success Rate",
+      "kpiSuccessRateNote": "Target: 90%",
+      "kpiAvgDuration": "Average Duration",
+      "kpiAvgDurationNote": "Per run",
+      "kpiCriticalFailures": "Critical Failures Detected",
+      "kpiCriticalFailuresNote": "Needs attention",
+      "searchPlaceholder": "Search by ID, suite or user...",
+      "triggerAll": "All",
+      "triggerAuto": "Auto (CI/CD)",
+      "triggerManual": "Manual",
+      "statusAll": "Status",
+      "statusPassed": "Passed",
+      "statusFailed": "Failed",
+      "statusAborted": "Aborted",
+      "columnSuite": "ID / Suite Run",
+      "columnTrigger": "Trigger",
+      "columnResults": "Results",
+      "columnDuration": "Duration",
+      "columnStatus": "Status",
+      "columnActions": "Actions",
+      "viewLog": "View run log",
+      "rerun": "Re-run Suite",
+      "empty": "No history records match the applied filters."
+    },
+    "form": {
+      "newTitle": "New Quality Report",
+      "newSubtitle": "Log visual design discrepancies, UX inconsistencies or manual test cases.",
+      "editTitle": "Edit Quality Report",
+      "backToList": "Back to list",
+      "publish": "Publish Issue",
+      "publishing": "Publishing...",
+      "submitError": "Could not save the report. Check the data and try again.",
+      "updateError": "Could not save the changes. Try again.",
+      "loadError": "Could not load this QA test.",
+      "loading": "Loading QA test...",
+      "step1Category": "1. Select the Category *",
+      "categoryOnly": "Category *",
+      "step2Details": "2. Issue Details",
+      "detailsOnly": "Issue Details",
+      "titleLabel": "Report Title *",
+      "titlePlaceholderUi": "E.g.: The 'Pay' button overflows the nav bar on mobile view",
+      "titlePlaceholderOther": "E.g.: Confirmation modal doesn't close after completing the action",
+      "moduloLabel": "Affected Module",
+      "moduloAutenticacion": "Authentication",
+      "moduloFacturacion": "Billing / Checkout",
+      "moduloPerfil": "User Profile",
+      "moduloNotificaciones": "Notifications",
+      "moduloDashboard": "Main Dashboard",
+      "ambienteLabel": "Environment",
+      "ambienteStaging": "Staging (STG)",
+      "ambienteDevelopment": "Development (DEV)",
+      "ambienteProduction": "Production (PROD)",
+      "prioridadLabel": "Priority",
+      "estadoActualLabel": "Current status",
+      "figmaLabel": "Figma Link / Visual Spec",
+      "deviceLabel": "Device / Browser Tested",
+      "devicePlaceholder": "E.g.: Safari iOS 17 / iPhone 13 Pro",
+      "step3Steps": "3. Steps to Reproduce the Discrepancy",
+      "stepsOnly": "Steps to Reproduce",
+      "addStep": "Add Step",
+      "stepPlaceholder": "Describe the action performed...",
+      "expectedLabel": "Expected Behavior / Design",
+      "expectedPlaceholder": "According to Figma, the button should have 16px padding and centered alignment...",
+      "actualLabel": "Actual Behavior / Design",
+      "actualPlaceholder": "The button overflows to the right, taking up 100% of the available width...",
+      "step4Evidence": "4. Visual Evidence: Before and After",
+      "evidenceOnly": "Visual Evidence: Before and After",
+      "imageBefore": "How it looked (before)",
+      "imageAfter": "How it turned out (after)",
+      "imageHint": "PNG, JPG or WEBP up to 10MB"
+    },
+    "quickRegister": {
+      "title": "Quick QA Registration",
+      "subtitle": "Type in the essentials of what the QA lead reported. You can fill in the detail and evidence later, from the edit view.",
+      "noteLabel": "Description / QA lead's note",
+      "notePlaceholder": "E.g.: The QA lead reported that the payment button isn't responding on mobile...",
+      "noteHint": "This text is the starting point for traceability; the response and solution details are filled in later during editing.",
+      "submit": "Register test"
+    }
+  },
+  "tareas": {
+    "title": "Development Tasks",
+    "subtitle": "Kanban task board: from development to deploy and QA sign-off.",
+    "addNew": "Add new task",
+    "allTasks": "All tasks",
+    "searchPlaceholder": "Search by title...",
+    "loading": "Loading tasks...",
+    "loadError": "Could not load tasks. Check that the backend is running and that you're signed in.",
+    "empty": "No tasks",
+    "deleteTask": "Delete task",
+    "deleteConfirm": "Delete task \"{{titulo}}\"? This action cannot be undone.",
+    "columns": {
+      "hacer": "To Do",
+      "en_curso": "In Progress",
+      "en_proceso": "In Review",
+      "terminado": "Done",
+      "cerrado": "Closed"
+    },
+    "modal": {
+      "title": "New task",
+      "createError": "Could not create the task. Try again.",
+      "tituloLabel": "Title",
+      "descripcionLabel": "Description",
+      "ramaLabel": "GitHub branch",
+      "ramaPlaceholder": "feature/my-branch",
+      "prioridadLabel": "Priority",
+      "prUrlLabel": "Pull Request URL",
+      "fechaLimiteLabel": "Due date",
+      "cancel": "Cancel",
+      "create": "Create task"
+    }
+  },
+  "configuracion": {
+    "title": "General Settings",
+    "subtitle": "Manage project preferences, security, integrations and notifications.",
+    "tabs": {
+      "general": "General",
+      "notificaciones": "Notifications",
+      "seguridad": "Security & Access",
+      "integraciones": "Integrations & Webhooks"
+    },
+    "general": {
+      "title": "Project Preferences",
+      "subtitle": "Adjust the main interface and behavior settings.",
+      "projectNameLabel": "Project Name",
+      "defaultEnvLabel": "Default Environment",
+      "languageLabel": "Interface Language"
+    },
+    "notificaciones": {
+      "title": "Alerts and Notifications",
+      "subtitle": "Choose when and where to receive QA test alerts.",
+      "emailOnFailure": "Notify failures by Email",
+      "emailOnFailureDesc": "Get an immediate email when a critical test fails.",
+      "emailDailyDigest": "Daily run summary",
+      "emailDailyDigestDesc": "A consolidated report every morning.",
+      "slackAlerts": "Alerts on Slack / Teams Channel",
+      "slackAlertsDesc": "Send run events to support channels.",
+      "webhookEvents": "Trigger real-time Webhooks",
+      "webhookEventsDesc": "Notify external endpoints on QA events."
+    },
+    "seguridad": {
+      "title": "Security and Tokens",
+      "subtitle": "Manage API credentials and authentication policies.",
+      "apiKeyLabel": "Project API Key",
+      "copy": "Copy",
+      "sessionTimeoutLabel": "Session Timeout (Minutes)"
+    },
+    "integraciones": {
+      "title": "CI/CD Integrations",
+      "subtitle": "Connect the QA system with your continuous deployment pipeline.",
+      "connected": "Connected",
+      "disconnected": "Disconnected"
+    }
+  },
+  "perfil": {
+    "active": "Active",
+    "changePhoto": "Change profile photo",
+    "tabs": {
+      "personal": "Personal Information",
+      "security": "Security & Access",
+      "preferences": "Preferences"
+    },
+    "personal": {
+      "title": "Personal and Professional Data",
+      "subtitle": "Update your contact details and the information visible to the team.",
+      "nameLabel": "Full Name",
+      "emailLabel": "Email Address",
+      "roleLabel": "Role / Position",
+      "departmentLabel": "Module / Area",
+      "bioLabel": "Bio / Notes",
+      "adminRole": "Administrator",
+      "agentRole": "Support Agent"
+    },
+    "security": {
+      "title": "Change Password",
+      "subtitle": "Make sure to use a secure password with at least 8 characters.",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "twoFactorTitle": "Two-Factor Authentication (2FA)",
+      "twoFactorDesc": "Add an extra layer of security by requiring a code on every sign-in."
+    },
+    "preferences": {
+      "title": "Notifications and System",
+      "subtitle": "Configure how and when you want to receive system alerts.",
+      "emailNotifications": "Email Notifications",
+      "emailNotificationsDesc": "Get daily summaries of QA reports and assignments.",
+      "qaAlerts": "Critical UI / Failure Alerts",
+      "qaAlertsDesc": "Notify immediately when a 'High' priority error is logged.",
+      "languageLabel": "Interface Language"
+    }
+  },
+  "reportes": {
+    "title": "Reports",
+    "description": "Reports module — to be implemented."
+  },
+  "centroAyuda": {
+    "badge": "Help Center & Documentation",
+    "heroTitle": "How can we help you today?",
+    "heroSubtitle": "Find quick guides, answers to frequent questions, or contact us directly.",
+    "searchPlaceholder": "Search questions, UI guides, QA reports...",
+    "quickAccess": "Quick Access by Module",
+    "card1Title": "Report a Bug or UI Issue",
+    "card1Desc": "Create a new incident or visual design discrepancy on the platform.",
+    "card1Cta": "Go to Form",
+    "card2Title": "QA Test Cases",
+    "card2Desc": "Check the general list of test scenarios and validations.",
+    "card2Cta": "View Module",
+    "card3Title": "Account Settings",
+    "card3Desc": "Manage your credentials, notifications and profile options.",
+    "card3Cta": "Go to My Profile",
+    "faqTitle": "Frequently Asked Questions",
+    "faqResults": "Showing {{count}} results",
+    "faqEmpty": "We couldn't find answers matching \"{{query}}\".",
+    "footerTitle": "Didn't find what you were looking for?",
+    "footerSubtitle": "Our technical support team is available to help you.",
+    "footerCta": "Contact QA Support",
+    "faqs": {
+      "1": {
+        "category": "Reports & QA",
+        "question": "How do I report a design or UI inconsistency?",
+        "answer": "Go to the Quality (QA) section and click 'New Report'. Select the 'Design / UI' category, attach the Figma/Penpot link and add screenshots or visual evidence of the issue."
+      },
+      "2": {
+        "category": "Reports & QA",
+        "question": "Where can I check the status of a bug report?",
+        "answer": "All reports are centralized in the main QA view. You can filter them by status (Open, In Review, Resolved) and by priority."
+      },
+      "3": {
+        "category": "Account & Access",
+        "question": "How do I change my password or enable two-factor authentication?",
+        "answer": "Go to the 'Profile' module from the side or top menu, select the 'Security & Access' tab, and there you can update your credentials and enable 2FA."
+      },
+      "4": {
+        "category": "Navigation",
+        "question": "What should I do if a view or module gets stuck loading?",
+        "answer": "Check your internet connection or try reloading the page (`Ctrl + F5`). If the problem persists, check for an active maintenance notice or report it to support."
+      }
+    }
+  }
+}

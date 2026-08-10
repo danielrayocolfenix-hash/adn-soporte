@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Clock, Cpu, Download, FileText, History, RotateCcw, Search, User } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { ExecutionStatusBadge } from "@/modules/qa/components/ExecutionStatusBadge";
 import { QA_HISTORIAL_MOCK_DATA } from "@/modules/qa/services/qaMockData";
 
 export function QaHistorialPage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [triggerFilter, setTriggerFilter] = useState<string>("all");
@@ -29,11 +31,10 @@ export function QaHistorialPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2.5">
             <History className="size-6 text-emerald-500" />
-            Historial de Pruebas QA
+            {t("qa.historial.title")}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Registro cronológico de ejecuciones pasadas, informes de auditoría y métricas de
-            estabilidad.
+            {t("qa.historial.subtitle")}
           </p>
         </div>
 
@@ -42,7 +43,7 @@ export function QaHistorialPage() {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium text-sm rounded-xl transition-all"
         >
           <Download size={16} />
-          Exportar Reporte
+          {t("qa.historial.exportReport")}
         </button>
       </div>
 
@@ -50,42 +51,48 @@ export function QaHistorialPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Total Ejecuciones
+            {t("qa.historial.kpiTotal")}
           </p>
           <div className="flex items-baseline justify-between mt-2">
             <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">148</h3>
             <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-              +12.5% este mes
+              {t("qa.historial.kpiTotalNote")}
             </span>
           </div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Tasa de Éxito</p>
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            {t("qa.historial.kpiSuccessRate")}
+          </p>
           <div className="flex items-baseline justify-between mt-2">
             <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">92.4%</h3>
-            <span className="text-xs font-medium text-slate-400">Objetivo: 90%</span>
+            <span className="text-xs font-medium text-slate-400">
+              {t("qa.historial.kpiSuccessRateNote")}
+            </span>
           </div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Duración Promedio
+            {t("qa.historial.kpiAvgDuration")}
           </p>
           <div className="flex items-baseline justify-between mt-2">
             <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">1m 38s</h3>
-            <span className="text-xs font-medium text-slate-400">Por corrida</span>
+            <span className="text-xs font-medium text-slate-400">
+              {t("qa.historial.kpiAvgDurationNote")}
+            </span>
           </div>
         </div>
 
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs">
           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Fallos Críticos Detectados
+            {t("qa.historial.kpiCriticalFailures")}
           </p>
           <div className="flex items-baseline justify-between mt-2">
             <h3 className="text-2xl font-bold text-rose-600 dark:text-rose-400">3</h3>
             <span className="text-xs font-medium text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md">
-              Requieren atención
+              {t("qa.historial.kpiCriticalFailuresNote")}
             </span>
           </div>
         </div>
@@ -100,7 +107,7 @@ export function QaHistorialPage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar por ID, suite o usuario..."
+            placeholder={t("qa.historial.searchPlaceholder")}
             className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 transition-all"
           />
         </div>
@@ -117,7 +124,7 @@ export function QaHistorialPage() {
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              Todos
+              {t("qa.historial.triggerAll")}
             </button>
             <button
               onClick={() => setTriggerFilter("auto")}
@@ -127,7 +134,7 @@ export function QaHistorialPage() {
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              <Cpu size={12} /> Auto (CI/CD)
+              <Cpu size={12} /> {t("qa.historial.triggerAuto")}
             </button>
             <button
               onClick={() => setTriggerFilter("manual")}
@@ -137,17 +144,17 @@ export function QaHistorialPage() {
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              <User size={12} /> Manual
+              <User size={12} /> {t("qa.historial.triggerManual")}
             </button>
           </div>
 
           {/* Filtro por Estado */}
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl text-xs font-medium">
             {[
-              { id: "all", label: "Estados" },
-              { id: "passed", label: "Pasó" },
-              { id: "failed", label: "Falló" },
-              { id: "aborted", label: "Cancelado" },
+              { id: "all", label: t("qa.historial.statusAll") },
+              { id: "passed", label: t("qa.historial.statusPassed") },
+              { id: "failed", label: t("qa.historial.statusFailed") },
+              { id: "aborted", label: t("qa.historial.statusAborted") },
             ].map((st) => (
               <button
                 key={st.id}
@@ -171,12 +178,12 @@ export function QaHistorialPage() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 text-xs font-semibold text-slate-500 dark:text-slate-400">
-                <th className="py-3.5 px-6">ID / Suite Ejecutada</th>
-                <th className="py-3.5 px-6">Disparador</th>
-                <th className="py-3.5 px-6">Resultados</th>
-                <th className="py-3.5 px-6">Duración</th>
-                <th className="py-3.5 px-6">Estado</th>
-                <th className="py-3.5 px-6 text-right">Acciones</th>
+                <th className="py-3.5 px-6">{t("qa.historial.columnSuite")}</th>
+                <th className="py-3.5 px-6">{t("qa.historial.columnTrigger")}</th>
+                <th className="py-3.5 px-6">{t("qa.historial.columnResults")}</th>
+                <th className="py-3.5 px-6">{t("qa.historial.columnDuration")}</th>
+                <th className="py-3.5 px-6">{t("qa.historial.columnStatus")}</th>
+                <th className="py-3.5 px-6 text-right">{t("qa.historial.columnActions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-sm">
@@ -247,14 +254,14 @@ export function QaHistorialPage() {
                         <button
                           type="button"
                           className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                          title="Ver Log de ejecución"
+                          title={t("qa.historial.viewLog")}
                         >
                           <FileText size={16} />
                         </button>
                         <button
                           type="button"
                           className="p-2 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                          title="Re-ejecutar Suite"
+                          title={t("qa.historial.rerun")}
                         >
                           <RotateCcw size={16} />
                         </button>
@@ -265,7 +272,7 @@ export function QaHistorialPage() {
               ) : (
                 <tr>
                   <td colSpan={6} className="py-12 text-center text-slate-400">
-                    No hay registros en el historial que coincidan con los filtros aplicados.
+                    {t("qa.historial.empty")}
                   </td>
                 </tr>
               )}

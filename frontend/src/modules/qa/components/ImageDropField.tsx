@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { Image as ImageIcon, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ImageDropFieldProps {
   label: string;
@@ -9,6 +10,7 @@ interface ImageDropFieldProps {
 }
 
 export function ImageDropField({ label, file, existingUrl, onChange }: ImageDropFieldProps) {
+  const { t } = useTranslation();
   const objectUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
   const previewUrl = objectUrl ?? existingUrl ?? null;
 
@@ -40,7 +42,7 @@ export function ImageDropField({ label, file, existingUrl, onChange }: ImageDrop
           <div className="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center">
             <ImageIcon size={20} />
           </div>
-          <p className="text-xs text-slate-400">PNG, JPG o WEBP hasta 10MB</p>
+          <p className="text-xs text-slate-400">{t("qa.form.imageHint")}</p>
           <input
             type="file"
             accept="image/*"

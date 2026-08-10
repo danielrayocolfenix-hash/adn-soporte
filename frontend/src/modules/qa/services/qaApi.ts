@@ -9,6 +9,7 @@ function toFormData(values: QaFormValues, pasosReproduccion: string): FormData {
   formData.append("ambiente", values.ambiente);
   formData.append("figma_url", values.figma_url);
   formData.append("device_or_browser", values.device_or_browser);
+  formData.append("codigo_error", values.codigo_error);
   formData.append("resultado_esperado", values.resultado_esperado);
   formData.append("resultado_obtenido", values.resultado_obtenido);
   formData.append("prioridad", values.prioridad);
@@ -18,9 +19,16 @@ function toFormData(values: QaFormValues, pasosReproduccion: string): FormData {
   return formData;
 }
 
+interface EnvelopeResponse<T> {
+  data?: T;
+  results?: T;
+}
+
 export async function listQa(): Promise<QaRecord[]> {
-  const { data } = await apiClient.get<{ results?: QaRecord[] } | QaRecord[]>("/qa/");
-  return Array.isArray(data) ? data : (data.results ?? []);
+  const { data } = await apiClient.get<EnvelopeResponse<QaRecord[]> | QaRecord[]>("/qa/");
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data.data)) return data.data;
+  return data.results ?? [];
 }
 
 export async function getQa(id: string): Promise<QaRecord> {
@@ -45,6 +53,13 @@ export async function updateQa(
     toFormData(values, pasosReproduccion),
     { headers: { "Content-Type": "multipart/form-data" } },
   );
+  return data;
+}
+
+export async function updateQaSolucion(id: string, resultadoObtenido: string): Promise<QaRecord> {
+  const { data } = await apiClient.patch<QaRecord>(`/qa/${id}/`, {
+    resultado_obtenido: resultadoObtenido,
+  });
   return data;
 }
 

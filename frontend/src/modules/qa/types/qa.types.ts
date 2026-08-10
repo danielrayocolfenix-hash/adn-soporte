@@ -1,4 +1,6 @@
-export type NewReportCategory = "ui_design" | "ux_flow" | "qa_test";
+import type { ErrorDetalle } from "@/modules/errores/types/errores.types";
+
+export type NewReportCategory = "ui_design" | "ux_flow" | "qa_test" | "server_error";
 
 export type QaAmbiente = "Development" | "Staging" | "Production";
 
@@ -27,6 +29,7 @@ export interface QaRecord {
   ambiente: QaAmbiente;
   figma_url: string;
   device_or_browser: string;
+  codigo_error: string;
   pasos_reproduccion: string;
   resultado_esperado: string;
   resultado_obtenido: string;
@@ -36,6 +39,7 @@ export interface QaRecord {
   responsable_nombre: string;
   prioridad: QaPrioridad;
   estado: QaEstado;
+  error_detalle: ErrorDetalle | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +51,7 @@ export interface QaFormValues {
   ambiente: QaAmbiente;
   figma_url: string;
   device_or_browser: string;
+  codigo_error: string;
   resultado_esperado: string;
   resultado_obtenido: string;
   prioridad: QaPrioridad;

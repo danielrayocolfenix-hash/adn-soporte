@@ -43,6 +43,7 @@ resetear la base de datos. `auth` cablea los endpoints JWT de
 python -m venv .venv
 .venv\Scripts\activate          # PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements/development.txt
+playwright install chromium     # navegador headless para "Probar endpoint" (monitor de errores)
 
 copy .env.example .env          # y ajustar credenciales de Postgres/Redis
 

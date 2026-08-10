@@ -13,29 +13,36 @@ import {
   Check,
   X,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { getInitials } from "@/modules/auth/utils/userDisplay";
+import { useLanguage } from "@/shared/hooks/useLanguage";
+import { useTheme } from "@/shared/hooks/useTheme";
 
 interface TopbarProps {
   onMenuToggle?: () => void;
+  onLogout?: () => void;
   user?: {
     name: string;
     role: string;
-    avatarUrl: string;
   };
 }
 
 export default function Topbar({
   onMenuToggle,
+  onLogout,
   user = {
-    name: "Ana Martínez",
-    role: "Administradora",
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150",
+    name: "Usuario",
+    role: "",
   },
 }: TopbarProps) {
+  const { t } = useTranslation();
+  const { language, setLanguage } = useLanguage();
+  const { isDark, toggleTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [currentLang, setCurrentLang] = useState("ES");
   const [searchQuery, setSearchQuery] = useState("");
 
   const notificationsRef = useRef<HTMLDivElement>(null);
@@ -72,19 +79,6 @@ export default function Topbar({
     };
   }, []);
 
-  // Alternar modo oscuro (añade/quita la clase 'dark' en <html>)
-  const toggleDarkMode = () => {
-    setIsDarkMode((prev) => {
-      const nextMode = !prev;
-      if (nextMode) {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-      return nextMode;
-    });
-  };
-
   return (
     <header className="h-16 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-xs transition-colors duration-200">
       {/* SECCIÓN IZQUIERDA: Menú móvil y Buscador */}
@@ -92,7 +86,7 @@ export default function Topbar({
         {onMenuToggle && (
           <button
             onClick={onMenuToggle}
-            aria-label="Abrir menú"
+            aria-label={t("topbar.openMenu")}
             className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors"
           >
             <Menu size={20} />
@@ -106,12 +100,13 @@ export default function Topbar({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Buscar en la plataforma..."
+            placeholder={t("topbar.searchPlaceholder")}
             className="w-full pl-10 pr-9 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
+              aria-label={t("topbar.clearSearch")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               <X size={14} />
@@ -130,30 +125,26 @@ export default function Topbar({
               setShowNotifications(false);
               setShowProfileMenu(false);
             }}
-            aria-label="Cambiar idioma"
+            aria-label={t("topbar.language")}
             className="p-2 sm:px-3 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <Globe size={18} />
-            <span className="text-xs font-semibold uppercase">{currentLang}</span>
+            <span className="text-xs font-semibold uppercase">{language}</span>
           </button>
 
           {showLangMenu && (
             <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl py-1 z-40 animate-in fade-in slide-in-from-top-2 duration-150">
-              {[
-                { code: "ES", label: "Español" },
-                { code: "EN", label: "English" },
-                { code: "PT", label: "Português" },
-              ].map((lang) => (
+              {(["es", "en", "pt"] as const).map((code) => (
                 <button
-                  key={lang.code}
+                  key={code}
                   onClick={() => {
-                    setCurrentLang(lang.code);
+                    setLanguage(code);
                     setShowLangMenu(false);
                   }}
                   className="w-full flex items-center justify-between px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                 >
-                  <span>{lang.label}</span>
-                  {currentLang === lang.code && (
+                  <span>{t(`common.languages.${code}`)}</span>
+                  {language === code && (
                     <Check size={14} className="text-indigo-600 dark:text-indigo-400" />
                   )}
                 </button>
@@ -164,11 +155,11 @@ export default function Topbar({
 
         {/* Toggle Modo Oscuro / Claro */}
         <button
-          onClick={toggleDarkMode}
-          aria-label="Alternar tema"
+          onClick={toggleTheme}
+          aria-label={t("topbar.theme")}
           className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         >
-          {isDarkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
+          {isDark ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} />}
         </button>
 
         {/* Notificaciones */}
@@ -179,7 +170,7 @@ export default function Topbar({
               setShowProfileMenu(false);
               setShowLangMenu(false);
             }}
-            aria-label="Ver notificaciones"
+            aria-label={t("topbar.notifications.open")}
             className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors relative focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
             <Bell size={18} />
@@ -190,43 +181,37 @@ export default function Topbar({
             <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl py-2 z-40 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-4 py-2 flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60">
                 <span className="font-semibold text-sm text-slate-800 dark:text-slate-100">
-                  Notificaciones
+                  {t("topbar.notifications.title")}
                 </span>
                 <span className="text-[10px] font-medium bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full">
-                  2 Nuevas
+                  2 {t("topbar.notifications.new")}
                 </span>
               </div>
               <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700/40">
-                <a
-                  href="#notif-1"
-                  className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors"
-                >
+                <div className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors">
                   <p className="text-xs font-medium text-slate-800 dark:text-slate-200">
-                    Nuevo usuario registrado
+                    {t("topbar.notifications.item1Title")}
                   </p>
                   <p className="text-[11px] text-slate-400 dark:text-slate-400 mt-0.5">
-                    Hace 5 minutos
+                    {t("topbar.notifications.item1Time")}
                   </p>
-                </a>
-                <a
-                  href="#notif-2"
-                  className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors"
-                >
+                </div>
+                <div className="block px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700/40 transition-colors">
                   <p className="text-xs font-medium text-slate-800 dark:text-slate-200">
-                    Reporte mensual generado con éxito
+                    {t("topbar.notifications.item2Title")}
                   </p>
                   <p className="text-[11px] text-slate-400 dark:text-slate-400 mt-0.5">
-                    Hace 1 hora
+                    {t("topbar.notifications.item2Time")}
                   </p>
-                </a>
+                </div>
               </div>
               <div className="px-4 pt-2 border-t border-slate-100 dark:border-slate-700/60 text-center">
-                <a
-                  href="#todas"
+                <button
+                  type="button"
                   className="text-xs text-indigo-600 dark:text-indigo-400 font-medium hover:underline"
                 >
-                  Ver todas las notificaciones
-                </a>
+                  {t("topbar.notifications.viewAll")}
+                </button>
               </div>
             </div>
           )}
@@ -243,14 +228,12 @@ export default function Topbar({
               setShowNotifications(false);
               setShowLangMenu(false);
             }}
-            aria-label="Menú de usuario"
+            aria-label={t("topbar.profile.menu")}
             className="flex items-center gap-2.5 p-1 sm:p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-left focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
           >
-            <img
-              src={user.avatarUrl}
-              alt={user.name}
-              className="w-8 h-8 rounded-lg object-cover ring-2 ring-indigo-500/20"
-            />
+            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white text-xs font-semibold flex items-center justify-center ring-2 ring-indigo-500/20">
+              {getInitials(user.name)}
+            </div>
             <div className="hidden md:block leading-tight">
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 {user.name}
@@ -270,29 +253,31 @@ export default function Topbar({
                 <p className="text-xs text-slate-400">{user.role}</p>
               </div>
 
-              <a
-                href="#perfil"
+              <Link
+                to="/perfil"
+                onClick={() => setShowProfileMenu(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
               >
                 <User size={16} className="text-slate-400" />
-                Mi Perfil
-              </a>
-              <a
-                href="#ajustes"
+                {t("topbar.profile.myProfile")}
+              </Link>
+              <Link
+                to="/configuracion"
+                onClick={() => setShowProfileMenu(false)}
                 className="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
               >
                 <Settings size={16} className="text-slate-400" />
-                Ajustes
-              </a>
+                {t("topbar.profile.settings")}
+              </Link>
 
               <div className="h-px bg-slate-100 dark:bg-slate-700/60 my-1"></div>
 
               <button
-                onClick={() => console.log("Cerrar sesión")}
+                onClick={onLogout}
                 className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors text-left font-medium"
               >
                 <LogOut size={16} />
-                Cerrar Sesión
+                {t("topbar.profile.logout")}
               </button>
             </div>
           )}

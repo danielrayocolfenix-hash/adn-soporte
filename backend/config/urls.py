@@ -8,7 +8,8 @@ api_v1_patterns = [
     path("usuarios/", include("apps.usuarios.presentation.urls.urls")),
     path("roles/", include("apps.roles.presentation.urls.urls")),
     path("qa/", include("apps.qa.presentation.urls.urls")),
-    path("seguimiento/", include("apps.seguimiento.presentation.urls.urls")),
+    path("errores/", include("apps.errores.presentation.urls.urls")),
+    path("tareas/", include("apps.seguimiento.presentation.urls.urls")),
     path("dashboard/", include("apps.dashboard.presentation.urls.urls")),
     path("notificaciones/", include("apps.notificaciones.presentation.urls.urls")),
     path("adjuntos/", include("apps.adjuntos.presentation.urls.urls")),
@@ -33,4 +34,9 @@ urlpatterns = [
 if settings.DEBUG:
     import debug_toolbar
 
-    urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
+    from apps.errores.presentation.views.debug_view import DebugBoomView
+
+    urlpatterns += [
+        path("__debug__/", include(debug_toolbar.urls)),
+        path("api/v1/_debug/boom/", DebugBoomView.as_view()),
+    ]

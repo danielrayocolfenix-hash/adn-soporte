@@ -13,6 +13,8 @@ import {
   Briefcase,
 } from "lucide-react";
 
+import { useCurrentUser } from "@/modules/auth/hooks/useCurrentUser";
+import { getDisplayName, getInitials } from "@/modules/auth/utils/userDisplay";
 import {
   DEFAULT_PREFERENCES_DATA,
   DEFAULT_PROFILE_DATA,
@@ -21,11 +23,25 @@ import {
 import type { ActiveTab } from "@/modules/perfil/types/perfil.types";
 
 export function PerfilPage() {
+  const { data: currentUser } = useCurrentUser();
   const [activeTab, setActiveTab] = useState<ActiveTab>("personal");
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Estados del Formulario de Perfil
   const [profileData, setProfileData] = useState(DEFAULT_PROFILE_DATA);
+
+  // Precarga el nombre/correo/rol reales en cuanto llega el usuario autenticado,
+  // ajustando durante el render (no en un efecto) para evitar un render extra.
+  const [loadedUserId, setLoadedUserId] = useState<number | null>(null);
+  if (currentUser && currentUser.id !== loadedUserId) {
+    setLoadedUserId(currentUser.id);
+    setProfileData((prev) => ({
+      ...prev,
+      name: getDisplayName(currentUser),
+      email: currentUser.email,
+      role: currentUser.is_staff ? "Administrador" : "Agente de soporte",
+    }));
+  }
 
   // Estados de Seguridad
   const [securityData, setSecurityData] = useState(DEFAULT_SECURITY_DATA);
@@ -51,7 +67,7 @@ export function PerfilPage() {
           <div className="flex items-end gap-4">
             <div className="relative group">
               <div className="size-24 rounded-2xl bg-indigo-600 border-4 border-white dark:border-slate-900 shadow-md flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
-                <span>AM</span>
+                <span>{getInitials(profileData.name)}</span>
               </div>
               <button
                 type="button"

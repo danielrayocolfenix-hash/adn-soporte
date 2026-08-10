@@ -72,6 +72,7 @@ def custom_exception_handler(exc, context):
         )
 
     logger.critical("Unhandled exception", exc_info=True)
+    _safe_capture_error(exc, context)
     return error_response(
         message=(
             "Ocurrió un problema interno. Nuestro equipo ya fue notificado. "
@@ -82,6 +83,21 @@ def custom_exception_handler(exc, context):
         action=_DEFAULT_ACTION,
         retry=True,
     )
+
+
+def _safe_capture_error(exc: Exception, context: dict) -> None:
+    """Registra la excepción en el monitor de errores. Nunca debe romper ni
+    enmascarar la respuesta 500 original si la captura misma falla."""
+    try:
+        from apps.errores.infraestructure.services.capture_service import (
+            capture_exception,
+        )
+
+        capture_exception(exc, context)
+    except Exception:
+        logger.error(
+            "No se pudo registrar el error en el monitor de errores", exc_info=True
+        )
 
 
 def _friendly_message_for(exc, status_code: int) -> tuple[str, str]:

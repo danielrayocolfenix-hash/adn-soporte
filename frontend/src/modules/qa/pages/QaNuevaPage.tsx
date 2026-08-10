@@ -9,6 +9,7 @@ import {
   CheckSquare,
   ExternalLink,
   Smartphone,
+  ServerCrash,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -23,6 +24,7 @@ const INITIAL_FORM: QaFormValues = {
   ambiente: "Staging",
   figma_url: "",
   device_or_browser: "iPhone 13 / Safari Mobile",
+  codigo_error: "",
   resultado_esperado: "",
   resultado_obtenido: "",
   prioridad: "media",
@@ -108,7 +110,7 @@ export function QaNuevaPage() {
             1. Selecciona la Categoría *
           </label>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               type="button"
               onClick={() => setFormData({ ...formData, categoria: "ui_design" })}
@@ -171,6 +173,28 @@ export function QaNuevaPage() {
                 </p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   Escenario de validación funcional rutinario para la suite de regresión.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, categoria: "server_error" })}
+              className={`p-4 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                formData.categoria === "server_error"
+                  ? "border-rose-500 bg-rose-500/5 dark:bg-rose-500/10 ring-1 ring-rose-500"
+                  : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800"
+              }`}
+            >
+              <div className="p-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 rounded-lg shrink-0">
+                <ServerCrash size={20} />
+              </div>
+              <div>
+                <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+                  Error de Servidor
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Errores 500, timeouts, excepciones no controladas u otras fallas del backend.
                 </p>
               </div>
             </button>
@@ -288,6 +312,23 @@ export function QaNuevaPage() {
                     className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-purple-500 transition-all"
                   />
                 </div>
+              </div>
+            )}
+
+            {/* Campo Condicional de Error de Servidor */}
+            {formData.categoria === "server_error" && (
+              <div className="md:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                  <ServerCrash size={14} className="text-rose-500" />
+                  Código de error / módulo afectado
+                </label>
+                <input
+                  type="text"
+                  value={formData.codigo_error}
+                  onChange={(e) => setFormData({ ...formData, codigo_error: e.target.value })}
+                  placeholder="Ej: 500, TimeoutError, /api/v1/qa/"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-rose-500 transition-all"
+                />
               </div>
             )}
           </div>

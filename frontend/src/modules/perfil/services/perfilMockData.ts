@@ -5,12 +5,12 @@ import type {
 } from "@/modules/perfil/types/perfil.types";
 
 export const DEFAULT_PROFILE_DATA: ProfileData = {
-  name: "Alex Morgan",
-  email: "alex.morgan@empresa.com",
-  role: "Líder de Calidad / QA Engineer",
-  phone: "+57 300 123 4567",
-  department: "Tecnología & Producto",
-  bio: "Especialista en QA, automatización de pruebas y aseguramiento de UI/UX.",
+  name: "",
+  email: "",
+  role: "",
+  phone: "",
+  department: "",
+  bio: "",
 };
 
 export const DEFAULT_SECURITY_DATA: SecurityData = {
