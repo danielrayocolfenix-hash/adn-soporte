@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import {
+  AlertTriangle,
   CalendarDays,
   ChevronDown,
   CheckCircle2,
@@ -9,6 +11,7 @@ import {
   ListChecks,
   Loader2,
   Pencil,
+  RotateCcw,
   Save,
   ServerCrash,
   Sparkles,
@@ -20,9 +23,11 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { CategoryBadge } from "@/modules/qa/components/CategoryBadge";
-import { useUpdateQaSolucion } from "@/modules/qa/hooks/useQa";
+import { ESTADO_LABELS, ESTADO_ORDER, ESTADO_STYLES, ESTADOS_RESUELTOS } from "@/modules/qa/constants/estado";
+import { useUpdateQaEstado, useUpdateQaSolucion } from "@/modules/qa/hooks/useQa";
 import type { NewReportCategory, QaEstado, QaRecord } from "@/modules/qa/types/qa.types";
 import { getInitials } from "@/modules/auth/utils/userDisplay";
+import { formatRelativeTime } from "@/shared/utils/formatRelativeTime";
 
 const PRIORIDAD_STYLES: Record<string, string> = {
   alta: "bg-rose-500/10 text-rose-400 border-rose-500/20",
@@ -43,18 +48,6 @@ const CATEGORIA_VISUAL: Record<NewReportCategory, { icon: typeof Layout; bg: str
   server_error: { icon: ServerCrash, bg: "bg-rose-500/10", text: "text-rose-600 dark:text-rose-400" },
 };
 
-const ESTADO_LABELS: Record<QaEstado, string> = {
-  nueva: "Nueva",
-  en_proceso: "En proceso",
-  pendiente_validacion: "Pendiente validación",
-  aprobada: "Aprobada",
-  rechazada: "Rechazada",
-  correccion: "Corrección",
-  validacion_final: "Validación final",
-  cerrada: "Cerrada",
-};
-
-const ESTADOS_RESUELTOS: QaEstado[] = ["aprobada", "validacion_final", "cerrada"];
 const CATEGORIAS_DISENO = ["ui_design", "ux_flow"];
 
 function formatFecha(iso: string): string {
@@ -71,7 +64,9 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [solucion, setSolucion] = useState(qa.resultado_obtenido);
   const [justSaved, setJustSaved] = useState(false);
+  const [estadoError, setEstadoError] = useState<string | null>(null);
   const updateSolucion = useUpdateQaSolucion();
+  const updateEstado = useUpdateQaEstado();
 
   const esDiseno = CATEGORIAS_DISENO.includes(qa.categoria);
   const estaResuelto = ESTADOS_RESUELTOS.includes(qa.estado);
@@ -86,6 +81,23 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
         onSuccess: () => {
           setJustSaved(true);
           setTimeout(() => setJustSaved(false), 2000);
+        },
+      },
+    );
+  };
+
+  const handleEstadoChange = (estado: QaEstado) => {
+    setEstadoError(null);
+    updateEstado.mutate(
+      { id: qa.id, estado },
+      {
+        onError: (err: unknown) => {
+          const message = isAxiosError(err)
+            ? (err.response?.data as { error?: { message?: string } } | undefined)?.error
+                ?.message
+            : undefined;
+          setEstadoError(message ?? "No fue posible cambiar el estado.");
+          setTimeout(() => setEstadoError(null), 4000);
         },
       },
     );
@@ -116,9 +128,14 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
             <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">
               {qa.titulo}
             </span>
-            {estaResuelto && (
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                <CheckCircle2 size={10} /> {ESTADO_LABELS[qa.estado]}
+            {estaResuelto && <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />}
+            {qa.veces_reabierto > 0 && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 shrink-0"
+                title="El monitor detectó que este problema volvió a ocurrir después de darse por resuelto"
+              >
+                <RotateCcw size={10} />
+                Regresión ×{qa.veces_reabierto}
               </span>
             )}
           </div>
@@ -129,9 +146,32 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
             >
               {t(`common.priority.${qa.prioridad}`)}
             </span>
+            <select
+              value={qa.estado}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleEstadoChange(e.target.value as QaEstado);
+              }}
+              disabled={updateEstado.isPending}
+              title="Cambiar estado"
+              className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase cursor-pointer focus:outline-none disabled:opacity-50 ${ESTADO_STYLES[qa.estado]}`}
+            >
+              {ESTADO_ORDER.map((estado) => (
+                <option key={estado} value={estado}>
+                  {ESTADO_LABELS[estado]}
+                </option>
+              ))}
+            </select>
             <span className="text-[11px] text-slate-400">
               {qa.modulo} · {qa.ambiente}
             </span>
+            {estadoError && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-rose-500 font-medium">
+                <AlertTriangle size={11} />
+                {estadoError}
+              </span>
+            )}
           </div>
         </div>
 
@@ -178,11 +218,43 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
       {/* Cuerpo expandible */}
       {isExpanded && (
         <div className="pl-5 pr-5 pb-5 pt-4 border-t border-slate-100 dark:border-slate-800/70 bg-slate-50/40 dark:bg-slate-950/20 space-y-4">
-          {qa.categoria === "server_error" && qa.codigo_error && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-              <ServerCrash size={12} />
-              {qa.codigo_error}
-            </div>
+          {qa.categoria === "server_error" && qa.error_detalle ? (
+            <Link
+              to={`/qa/detalle/${qa.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="block rounded-xl border border-rose-500/20 bg-rose-500/5 dark:bg-rose-500/10 px-3.5 py-2.5 hover:border-rose-500/40 transition-colors"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400 truncate">
+                  <ServerCrash size={12} className="shrink-0" />
+                  {qa.error_detalle.exception_type}
+                </p>
+                <span className="shrink-0 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                  {qa.error_detalle.count}x · {formatRelativeTime(qa.error_detalle.last_seen)}
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300 truncate mt-1">
+                {qa.error_detalle.mensaje}
+              </p>
+              {(() => {
+                const frame =
+                  qa.error_detalle.stack_frames.find((f) => f.in_app) ??
+                  qa.error_detalle.stack_frames[0];
+                return frame ? (
+                  <p className="text-[11px] font-mono text-slate-400 truncate mt-1">
+                    {frame.file}:{frame.line}
+                  </p>
+                ) : null;
+              })()}
+            </Link>
+          ) : (
+            qa.categoria === "server_error" &&
+            qa.codigo_error && (
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                <ServerCrash size={12} />
+                {qa.codigo_error}
+              </div>
+            )
           )}
 
           {qa.pasos_reproduccion && (
@@ -196,28 +268,14 @@ export function QaCard({ qa, onDelete }: QaCardProps) {
             </div>
           )}
 
-          {(qa.resultado_esperado || (!esDiseno && qa.resultado_obtenido)) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {qa.resultado_esperado && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-1.5">
-                    Esperado
-                  </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-3">
-                    {qa.resultado_esperado}
-                  </p>
-                </div>
-              )}
-              {!esDiseno && qa.resultado_obtenido && (
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-1.5">
-                    Obtenido
-                  </p>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-3">
-                    {qa.resultado_obtenido}
-                  </p>
-                </div>
-              )}
+          {qa.resultado_esperado && (
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-1.5">
+                Comportamiento esperado
+              </p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 p-3">
+                {qa.resultado_esperado}
+              </p>
             </div>
           )}
 

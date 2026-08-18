@@ -23,6 +23,11 @@ PROBE_ALLOWED_HOSTS = env.list(
     "PROBE_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"]
 )
 
+# Clave de la API de Anthropic usada por el diagnóstico automático con IA en
+# la consola de errores. Si está vacía, esa función se desactiva de forma
+# controlada (ver ai_diagnosis.py) en vez de fallar.
+ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
+
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

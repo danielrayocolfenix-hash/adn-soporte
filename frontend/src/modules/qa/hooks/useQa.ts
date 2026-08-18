@@ -1,8 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createQa, deleteQa, getQa, listQa, updateQa, updateQaSolucion } from "@/modules/qa/services/qaApi";
-import type { QaFormValues } from "@/modules/qa/types/qa.types";
+import {
+  createQa,
+  deleteQa,
+  getQa,
+  listQa,
+  updateQa,
+  updateQaEstado,
+  updateQaSolucion,
+} from "@/modules/qa/services/qaApi";
+import type { QaEstado, QaFormValues } from "@/modules/qa/types/qa.types";
 import { probarEndpoint } from "@/modules/errores/services/probarApi";
+import { diagnosticarError } from "@/modules/errores/services/diagnosisApi";
 import { useMemo } from "react";
 
 const QA_QUERY_KEY = ["qa"] as const;
@@ -71,6 +80,19 @@ export function useUpdateQaSolucion() {
   });
 }
 
+export function useUpdateQaEstado() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, estado }: { id: string; estado: QaEstado }) => updateQaEstado(id, estado),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QA_QUERY_KEY });
+      // El backend mueve automáticamente la tarea vinculada en el Kanban
+      // (ver signals.py de "seguimiento"), así que el tablero debe refrescarse también.
+      queryClient.invalidateQueries({ queryKey: ["tareas"] });
+    },
+  });
+}
+
 export function useDeleteQa() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -89,5 +111,13 @@ export function useProbarEndpoint() {
         queryClient.invalidateQueries({ queryKey: QA_QUERY_KEY });
       }
     },
+  });
+}
+
+export function useDiagnosticarError() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => diagnosticarError(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QA_QUERY_KEY }),
   });
 }

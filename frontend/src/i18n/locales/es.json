@@ -84,7 +84,7 @@
     }
   },
   "auth": {
-    "title": "ADN-Soporte",
+    "title": "ADN-QA",
     "subtitle": "Ingresa con tu cuenta para continuar.",
     "username": "Usuario",
     "password": "Contraseña",

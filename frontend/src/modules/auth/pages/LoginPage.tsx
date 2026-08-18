@@ -23,7 +23,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex flex-col items-center gap-2 text-center">
         <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500">
           <SquareTerminal size={20} />

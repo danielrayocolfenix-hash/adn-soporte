@@ -12,3 +12,4 @@ class EstadoQa(str, Enum):
     CORRECCION = "correccion"
     VALIDACION_FINAL = "validacion_final"
     CERRADA = "cerrada"
+    REABIERTA = "reabierta"

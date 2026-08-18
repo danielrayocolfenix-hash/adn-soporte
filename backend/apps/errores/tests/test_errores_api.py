@@ -62,6 +62,39 @@ def test_dos_ocurrencias_mismo_callsite_incrementan_una_sola_fila():
 
 
 @pytest.mark.django_db
+def test_ocurrencias_recientes_registra_cada_captura():
+    group = _capture(_raise_at_callsite_a)
+    assert len(group.ocurrencias_recientes) == 1
+
+    group = _capture(_raise_at_callsite_a)
+    assert len(group.ocurrencias_recientes) == 2
+    # Orden cronológico: la más reciente al final.
+    assert group.ocurrencias_recientes[-1] >= group.ocurrencias_recientes[0]
+
+
+@pytest.mark.django_db
+def test_ocurrencias_recientes_se_recorta_al_maximo():
+    from apps.errores.infraestructure.models.error_model import (
+        OCURRENCIAS_RECIENTES_MAX,
+    )
+
+    group = None
+    for _ in range(OCURRENCIAS_RECIENTES_MAX + 10):
+        group = _capture(_raise_at_callsite_a)
+
+    assert group.count == OCURRENCIAS_RECIENTES_MAX + 10
+    assert len(group.ocurrencias_recientes) == OCURRENCIAS_RECIENTES_MAX
+
+
+@pytest.mark.django_db
+def test_contexto_de_codigo_incluye_varias_lineas_alrededor():
+    group = _capture(_raise_at_callsite_a)
+    app_frame = next(f for f in group.stack_frames if f["in_app"])
+
+    assert len(app_frame["context_lines"]) > 5
+
+
+@pytest.mark.django_db
 def test_callsites_distintos_crean_filas_separadas():
     _capture(_raise_at_callsite_a)
     _capture(_raise_at_callsite_b)
@@ -380,3 +413,66 @@ def test_probar_detecta_error_de_javascript_del_navegador(user, settings):
 
     ticket.refresh_from_db()
     assert ticket.errores_vinculados.filter(id=browser_group["id"]).exists()
+
+
+DIAGNOSTICAR_PATH = "apps.errores.presentation.views.error_view.generate_diagnosis"
+
+DIAGNOSIS_PAYLOAD = {
+    "causa_raiz": "El id no existe en la base de datos.",
+    "solucion_sugerida": "Validar la existencia antes de operar sobre el objeto.",
+    "codigo_sugerido": "",
+    "confianza": "media",
+    "advertencia": "",
+}
+
+
+@pytest.mark.django_db
+def test_diagnosticar_devuelve_y_cachea_el_diagnostico(user):
+    group = _capture(_raise_at_callsite_a)
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    with patch(DIAGNOSTICAR_PATH, return_value=DIAGNOSIS_PAYLOAD) as mock_generate:
+        response = client.post(f"/api/v1/errores/{group.id}/diagnosticar/")
+
+    assert response.status_code == 200
+    assert response.data["data"]["ai_diagnostico"] == DIAGNOSIS_PAYLOAD
+    assert response.data["data"]["ai_diagnostico_en"] is not None
+    mock_generate.assert_called_once()
+
+    group.refresh_from_db()
+    assert group.ai_diagnostico == DIAGNOSIS_PAYLOAD
+    assert group.ai_diagnostico_en is not None
+
+
+@pytest.mark.django_db
+def test_diagnosticar_sin_api_key_devuelve_503(user):
+    from apps.errores.infraestructure.services.ai_diagnosis import (
+        AiDiagnosisUnavailable,
+    )
+
+    group = _capture(_raise_at_callsite_a)
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    with patch(DIAGNOSTICAR_PATH, side_effect=AiDiagnosisUnavailable("sin api key")):
+        response = client.post(f"/api/v1/errores/{group.id}/diagnosticar/")
+
+    assert response.status_code == 503
+    assert response.data["error"]["code"] == "AI_DIAGNOSIS_UNAVAILABLE"
+
+    group.refresh_from_db()
+    assert group.ai_diagnostico is None
+
+
+@pytest.mark.django_db
+def test_diagnosticar_error_inesperado_devuelve_502(user):
+    group = _capture(_raise_at_callsite_a)
+    client = APIClient()
+    client.force_authenticate(user=user)
+
+    with patch(DIAGNOSTICAR_PATH, side_effect=RuntimeError("boom")):
+        response = client.post(f"/api/v1/errores/{group.id}/diagnosticar/")
+
+    assert response.status_code == 502
+    assert response.data["error"]["code"] == "AI_DIAGNOSIS_ERROR"

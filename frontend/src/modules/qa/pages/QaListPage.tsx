@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import { QaCard } from "@/modules/qa/components/QaCard";
 import { QaQuickRegisterPanel } from "@/modules/qa/components/QaQuickRegisterPanel";
 import { useDeleteQa, useQaList } from "@/modules/qa/hooks/useQa";
-import type { NewReportCategory } from "@/modules/qa/types/qa.types";
+import type { NewReportCategory, QaPrioridad } from "@/modules/qa/types/qa.types";
 
 const CATEGORIA_FILTERS: {
   value: NewReportCategory | "all";
@@ -54,6 +54,31 @@ const CATEGORIA_FILTERS: {
   },
 ];
 
+const CATEGORIA_GROUPS: {
+  value: NewReportCategory;
+  label: string;
+  icon: typeof Layout;
+  text: string;
+}[] = [
+  { value: "ui_design", label: "Diseño / UI", icon: Layout, text: "text-purple-600 dark:text-purple-400" },
+  { value: "ux_flow", label: "Comportamiento / UX", icon: UserCheck, text: "text-sky-600 dark:text-sky-400" },
+  { value: "qa_test", label: "Prueba Manual QA", icon: CheckSquare, text: "text-emerald-600 dark:text-emerald-400" },
+  { value: "server_error", label: "Error de Servidor", icon: ServerCrash, text: "text-rose-600 dark:text-rose-400" },
+];
+
+const PRIORITY_GROUPS: {
+  key: QaPrioridad;
+  label: string;
+  className: string;
+}[] = [
+  { key: "alta", label: "Alta", className: "text-rose-600 dark:text-rose-400" },
+  { key: "media", label: "Media", className: "text-amber-600 dark:text-amber-400" },
+  { key: "baja", label: "Baja", className: "text-emerald-600 dark:text-emerald-400" },
+];
+
+const priorityOrder = (prioridad: QaPrioridad) =>
+  PRIORITY_GROUPS.findIndex((group) => group.key === prioridad);
+
 export function QaListPage() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,24 +98,6 @@ export function QaListPage() {
       deleteQa.mutate(id);
     }
   };
-  
-  const PRIORITY_GROUPS = [
-    {
-      key: "ALTA",
-      label: "Alta",
-      className: "text-rose-600",
-    },
-    {
-      key: "MEDIA",
-      label: "Media",
-      className: "text-amber-600",
-    },
-    {
-      key: "BAJA",
-      label: "Baja",
-      className: "text-emerald-600",
-    },
-  ] as const;
 
   return (
     <div className="space-y-6 pb-10">
@@ -166,6 +173,23 @@ export function QaListPage() {
             );
           })}
         </div>
+
+        {/* Resumen por prioridad */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            Prioridad
+          </span>
+          {PRIORITY_GROUPS.map((group) => (
+            <span
+              key={group.key}
+              className={`inline-flex items-center gap-1.5 text-xs font-medium ${group.className}`}
+            >
+              <span className="size-1.5 rounded-full bg-current" />
+              {group.label}
+              <span className="font-semibold">{(groupedByPriority[group.key] ?? []).length}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       {/* Contenido */}
@@ -190,10 +214,34 @@ export function QaListPage() {
       )}
 
       {!isLoading && !isError && filteredItems.length > 0 && (
-        <div className="space-y-3 grid grid-cols-2 gap-4">
-          {filteredItems.map((item) => (
-            <QaCard key={item.id} qa={item} onDelete={handleDelete} />
-          ))}
+        <div className="space-y-8">
+          {CATEGORIA_GROUPS.map((group) => {
+            const groupItems = filteredItems
+              .filter((item) => item.categoria === group.value)
+              .sort((a, b) => priorityOrder(a.prioridad) - priorityOrder(b.prioridad));
+            if (groupItems.length === 0) return null;
+            const Icon = group.icon;
+
+            return (
+              <div key={group.value} className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Icon size={16} className={group.text} />
+                  <h2 className={`text-sm font-semibold tracking-wide uppercase ${group.text}`}>
+                    {group.label}
+                  </h2>
+                  <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                    {groupItems.length}
+                  </span>
+                  <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {groupItems.map((item) => (
+                    <QaCard key={item.id} qa={item} onDelete={handleDelete} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

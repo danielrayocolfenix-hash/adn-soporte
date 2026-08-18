@@ -59,6 +59,7 @@ const MENU_GROUPS: MenuGroup[] = [
     items: [
       { to: "/qa", labelKey: "nav.groups.qaListado" },
       { to: "/qa/nueva", labelKey: "nav.groups.qaNueva" },
+      { to: "/qa/suites", labelKey: "Pruebas manuales" },
       { to: "/qa/historial", labelKey: "nav.groups.qaHistorial" },
     ],
   },

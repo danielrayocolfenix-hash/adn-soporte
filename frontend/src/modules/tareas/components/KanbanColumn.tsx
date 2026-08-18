@@ -1,6 +1,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 interface KanbanColumnProps {
   id: string;
@@ -13,12 +14,13 @@ interface KanbanColumnProps {
 
 export function KanbanColumn({ id, title, icon: Icon, count, accentClassName, children }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const { t } = useTranslation("tareas");
 
   return (
     <div className="flex flex-col min-w-[280px] w-[280px] shrink-0 lg:w-auto lg:min-w-0 bg-slate-100/70 dark:bg-slate-900/40 rounded-2xl p-2.5">
       <div className="flex items-center gap-2 mb-3 px-1">
         <Icon size={14} className="text-slate-400 shrink-0" />
-        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{title}</h3>
+        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate"> {t(`columns.${title}`)}</h3>
         <span
           className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[11px] font-semibold shrink-0 ${accentClassName}`}
         >

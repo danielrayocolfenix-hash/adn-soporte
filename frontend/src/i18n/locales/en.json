@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "ADN-Soporte",
+    "appName": "ADN-QA",
     "save": "Save",
     "saveChanges": "Save Changes",
     "saving": "Saving...",
@@ -153,6 +153,7 @@
       "subtitle": "Design, UX and manual test reports logged by the team.",
       "newTest": "New test",
       "searchPlaceholder": "Search by title...",
+      "filterCategory": "Filter by category",
       "loading": "Loading QA tests...",
       "loadError": "Could not load QA tests. Check that the backend is running and that you're signed in.",
       "empty": "No QA tests registered yet.",

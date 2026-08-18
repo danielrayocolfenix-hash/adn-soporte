@@ -9,6 +9,7 @@ from apps.errores.domain.value_objects.nivel import NivelError
 from apps.errores.infraestructure.services.fingerprint import normalize_message
 from apps.errores.infraestructure.services.qa_link import (
     create_linked_qa_ticket,
+    escalar_prioridad_si_recurrente,
     reopen_qa_ticket_if_resolved,
     resolve_responsable,
 )
@@ -31,6 +32,7 @@ def _parse_stack_frames(stack: str) -> list[dict]:
             {
                 "file": match.group("file"),
                 "line": int(match.group("line")),
+                "column": int(match.group("col")),
                 "function": (match.group("function") or "<anónimo>").strip(),
                 "code_context": "",
                 "context_lines": [],
@@ -90,7 +92,10 @@ def capture_browser_errors(
     if not console_errors and not page_errors:
         return None
 
-    from apps.errores.infraestructure.models.error_model import ErrorGroupModel
+    from apps.errores.infraestructure.models.error_model import (
+        ErrorGroupModel,
+        append_occurrence,
+    )
 
     primary = _primary_error(console_errors, page_errors)
     fingerprint_source = f"browser::{path}::{normalize_message(primary['mensaje'])}"
@@ -116,7 +121,12 @@ def capture_browser_errors(
     with transaction.atomic():
         group, created = ErrorGroupModel.objects.select_for_update().get_or_create(
             fingerprint=fingerprint,
-            defaults={**rolling_fields, "count": 1, "first_seen": now},
+            defaults={
+                **rolling_fields,
+                "count": 1,
+                "first_seen": now,
+                "ocurrencias_recientes": [now.isoformat()],
+            },
         )
         if created:
             create_linked_qa_ticket(group, resolve_responsable(triggered_by))
@@ -124,8 +134,14 @@ def capture_browser_errors(
             for field, value in rolling_fields.items():
                 setattr(group, field, value)
             group.count = group.count + 1
-            group.save(update_fields=[*rolling_fields.keys(), "count"])
+            group.ocurrencias_recientes = append_occurrence(
+                group.ocurrencias_recientes, now
+            )
+            group.save(
+                update_fields=[*rolling_fields.keys(), "count", "ocurrencias_recientes"]
+            )
             if group.qa_ticket_id:
                 reopen_qa_ticket_if_resolved(group.qa_ticket)
+                escalar_prioridad_si_recurrente(group.qa_ticket, group.count)
 
     return group

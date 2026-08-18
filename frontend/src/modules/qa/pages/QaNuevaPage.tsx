@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import {
   ArrowLeft,
+  Bug,
   Plus,
   Trash2,
   Send,
   Layout,
+  Loader2,
   UserCheck,
   CheckSquare,
   ExternalLink,
@@ -14,8 +17,13 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 import { ImageDropField } from "@/modules/qa/components/ImageDropField";
-import { useCreateQa } from "@/modules/qa/hooks/useQa";
+import { useCreateQa, useProbarEndpoint } from "@/modules/qa/hooks/useQa";
 import type { QaFormValues, ReproductionStep } from "@/modules/qa/types/qa.types";
+
+interface ProbeMessage {
+  tone: "ok" | "warn" | "error";
+  text: string;
+}
 
 const INITIAL_FORM: QaFormValues = {
   titulo: "",
@@ -35,11 +43,62 @@ const INITIAL_FORM: QaFormValues = {
 export function QaNuevaPage() {
   const navigate = useNavigate();
   const createQa = useCreateQa();
+  const probar = useProbarEndpoint();
 
   const [formData, setFormData] = useState<QaFormValues>(INITIAL_FORM);
   const [steps, setSteps] = useState<ReproductionStep[]>([
     { id: "1", step: "Ingresar a la pantalla de Checkout en pantalla responsive (375px)" },
   ]);
+  const [probeMessage, setProbeMessage] = useState<ProbeMessage | null>(null);
+
+  const handleProbarEndpoint = () => {
+    if (!formData.codigo_error.trim()) {
+      setProbeMessage({
+        tone: "error",
+        text: "Escribe primero la URL o ruta a probar en \"Código de error / módulo afectado\".",
+      });
+      return;
+    }
+
+    setProbeMessage(null);
+    probar.mutate(
+      { url: formData.codigo_error.trim() },
+      {
+        onSuccess: (result) => {
+          const found = result.error_group ?? result.browser_error_group;
+          if (found?.qa_ticket) {
+            // Ya existe (o se acaba de crear) un ticket para este error: se
+            // evita duplicar el registro y se va directo a su detalle.
+            navigate(`/qa/detalle/${found.qa_ticket}`);
+            return;
+          }
+          if (result.network_error) {
+            setProbeMessage({
+              tone: "error",
+              text: `No se pudo contactar el endpoint: ${result.network_error}`,
+            });
+            return;
+          }
+          const browserNote = result.browser_probe_error
+            ? ` (no se pudo revisar errores de JavaScript: ${result.browser_probe_error})`
+            : "";
+          setProbeMessage({
+            tone: result.ok ? "ok" : "warn",
+            text: result.ok
+              ? `Respondió ${result.status_code} sin errores internos ni de JavaScript. Puedes continuar registrando el reporte manualmente.${browserNote}`
+              : `Respondió ${result.status_code}, sin una excepción capturada por el monitor.${browserNote}`,
+          });
+        },
+        onError: (err: unknown) => {
+          const message = isAxiosError(err)
+            ? (err.response?.data as { error?: { message?: string } } | undefined)?.error
+                ?.message
+            : undefined;
+          setProbeMessage({ tone: "error", text: message ?? "No fue posible probar el endpoint." });
+        },
+      },
+    );
+  };
 
   const handleAddStep = () => {
     setSteps((prev) => [...prev, { id: Date.now().toString(), step: "" }]);
@@ -322,13 +381,45 @@ export function QaNuevaPage() {
                   <ServerCrash size={14} className="text-rose-500" />
                   Código de error / módulo afectado
                 </label>
-                <input
-                  type="text"
-                  value={formData.codigo_error}
-                  onChange={(e) => setFormData({ ...formData, codigo_error: e.target.value })}
-                  placeholder="Ej: 500, TimeoutError, /api/v1/qa/"
-                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-rose-500 transition-all"
-                />
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={formData.codigo_error}
+                    onChange={(e) => setFormData({ ...formData, codigo_error: e.target.value })}
+                    placeholder="Ej: /api/v1/qa/ (ruta o URL a probar)"
+                    className="flex-1 px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-rose-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleProbarEndpoint}
+                    disabled={probar.isPending}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-medium text-sm rounded-xl transition-all disabled:opacity-50 shrink-0"
+                  >
+                    {probar.isPending ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <Bug size={16} />
+                    )}
+                    {probar.isPending ? "Probando..." : "Probar antes de crear"}
+                  </button>
+                </div>
+                <p className="mt-1.5 text-[11px] text-slate-400">
+                  Si detecta un error, el ticket se genera automáticamente y te lleva a su
+                  detalle en vez de duplicarlo aquí. Puede tardar unos segundos.
+                </p>
+                {probeMessage && (
+                  <p
+                    className={`mt-2 text-xs ${
+                      probeMessage.tone === "ok"
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : probeMessage.tone === "warn"
+                          ? "text-amber-600 dark:text-amber-400"
+                          : "text-rose-600 dark:text-rose-400"
+                    }`}
+                  >
+                    {probeMessage.text}
+                  </p>
+                )}
               </div>
             )}
           </div>

@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/services/apiClient";
-import type { QaFormValues, QaRecord } from "@/modules/qa/types/qa.types";
+import type { QaEstado, QaFormValues, QaRecord } from "@/modules/qa/types/qa.types";
 
 function toFormData(values: QaFormValues, pasosReproduccion: string): FormData {
   const formData = new FormData();
@@ -60,6 +60,11 @@ export async function updateQaSolucion(id: string, resultadoObtenido: string): P
   const { data } = await apiClient.patch<QaRecord>(`/qa/${id}/`, {
     resultado_obtenido: resultadoObtenido,
   });
+  return data;
+}
+
+export async function updateQaEstado(id: string, estado: QaEstado): Promise<QaRecord> {
+  const { data } = await apiClient.patch<QaRecord>(`/qa/${id}/`, { estado });
   return data;
 }
 
