@@ -6,6 +6,15 @@ from django.db import models
 from apps.errores.domain.value_objects.ambiente import AMBIENTE_CHOICES
 from apps.errores.domain.value_objects.nivel import NivelError
 
+OCURRENCIAS_RECIENTES_MAX = 100
+
+
+def append_occurrence(existing: list[str], when) -> list[str]:
+    """Agrega `when` (datetime) a la lista de ocurrencias recientes,
+    recortando las más antiguas si excede el máximo."""
+    updated = [*existing, when.isoformat()]
+    return updated[-OCURRENCIAS_RECIENTES_MAX:]
+
 
 class ErrorGroupModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -47,6 +56,10 @@ class ErrorGroupModel(models.Model):
     count = models.PositiveIntegerField(default=1)
     first_seen = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField()
+    # Marca de tiempo de cada una de las últimas ocurrencias (recortada a
+    # OCURRENCIAS_RECIENTES_MAX), para ver la tendencia en el tiempo sin
+    # necesitar una tabla de ocurrencias aparte.
+    ocurrencias_recientes = models.JSONField(default=list, blank=True)
 
     # Ticket QA creado automáticamente al capturar la primera ocurrencia. La
     # triage (estado, causa raíz, solución) vive en ese ticket, no aquí:
@@ -58,6 +71,12 @@ class ErrorGroupModel(models.Model):
         blank=True,
         related_name="errores_vinculados",
     )
+
+    # Diagnóstico generado bajo demanda por IA (ver ai_diagnosis.py). Se
+    # guarda en caché aquí para no volver a llamar a la API cada vez que se
+    # abre el ticket; el usuario puede pedir "Regenerar" explícitamente.
+    ai_diagnostico = models.JSONField(null=True, blank=True)
+    ai_diagnostico_en = models.DateTimeField(null=True, blank=True)
 
     updated_at = models.DateTimeField(auto_now=True)
 

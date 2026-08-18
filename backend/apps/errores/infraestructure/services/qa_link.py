@@ -2,6 +2,11 @@ SYSTEM_USERNAME = "sistema-monitor"
 
 _ESTADOS_RESUELTOS = {"aprobada", "validacion_final", "cerrada"}
 
+# A partir de cuántas ocurrencias de un mismo error (ya con ticket abierto)
+# se considera lo bastante recurrente como para subir su prioridad, aunque
+# el nivel técnico no sea "critical".
+_UMBRAL_RECURRENCIA_PRIORIDAD_ALTA = 5
+
 
 def resolve_responsable(user):
     """Devuelve el usuario a asignar como responsable del ticket QA
@@ -56,7 +61,31 @@ def create_linked_qa_ticket(group, responsable):
 def reopen_qa_ticket_if_resolved(qa_ticket) -> None:
     """Si la recurrencia de un error ya venía con su ticket QA cerrado o
     aprobado, lo reabre: la solución previa no evitó que volviera a
-    ocurrir."""
-    if qa_ticket.estado in _ESTADOS_RESUELTOS:
-        qa_ticket.estado = "nueva"
-        qa_ticket.save(update_fields=["estado"])
+    ocurrir. Queda como una regresión explícita (estado REABIERTA + contador),
+    no como un ticket "nueva" indistinguible de uno recién creado."""
+    if qa_ticket.estado not in _ESTADOS_RESUELTOS:
+        return
+
+    from apps.qa.infraestructure.services.estado_historial import (
+        registrar_cambio_estado,
+    )
+
+    estado_anterior = qa_ticket.estado
+    qa_ticket.estado = "reabierta"
+    qa_ticket.veces_reabierto = qa_ticket.veces_reabierto + 1
+    qa_ticket.save(update_fields=["estado", "veces_reabierto"])
+    registrar_cambio_estado(qa_ticket, estado_anterior, "reabierta", usuario=None)
+
+
+def escalar_prioridad_si_recurrente(qa_ticket, count: int) -> None:
+    """Si un error ya vinculado a un ticket vuelve a ocurrir con suficiente
+    frecuencia, sube su prioridad aunque el nivel técnico siga siendo
+    "error" (no "critical"): la recurrencia también es una señal de
+    impacto, no solo la severidad de una sola ocurrencia."""
+    if qa_ticket.prioridad == "alta":
+        return
+    if count < _UMBRAL_RECURRENCIA_PRIORIDAD_ALTA:
+        return
+
+    qa_ticket.prioridad = "alta"
+    qa_ticket.save(update_fields=["prioridad"])

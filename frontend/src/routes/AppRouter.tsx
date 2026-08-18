@@ -12,6 +12,7 @@ import { QaDetallePage } from "@/modules/qa/pages/QaDetallePage";
 import { QaHistorialPage } from "@/modules/qa/pages/QaHistorialPage";
 import { QaListPage } from "@/modules/qa/pages/QaListPage";
 import { QaNuevaPage } from "@/modules/qa/pages/QaNuevaPage";
+import { SuitesPage } from "@/modules/qa/pages/SuitesPage";
 import { ReportesPage } from "@/modules/reportes/pages/ReportesPage";
 import { TareasPage } from "@/modules/tareas/pages/TareasPage";
 import { CentAyudaPage } from "@/modules/centro_ayuda/pages/centAyudapage";
@@ -32,6 +33,7 @@ export function AppRouter() {
           <Route path="/qa/nueva" element={<QaNuevaPage />} />
           <Route path="/qa/detalle/:id" element={<QaDetallePage />} />
           <Route path="/qa/historial" element={<QaHistorialPage />} />
+          <Route path="/qa/suites" element={<SuitesPage />} />
           <Route path="/reportes" element={<ReportesPage />} />
           <Route path="/tareas" element={<TareasPage />} />
           <Route path="/configuracion" element={<ConfiguracionPage />} />

@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlsplit
 
 from django.db.models import Q
@@ -6,6 +7,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 
 from apps.errores.infraestructure.models.error_model import ErrorGroupModel
+from apps.errores.infraestructure.services.ai_diagnosis import (
+    AiDiagnosisUnavailable,
+    generate_diagnosis,
+)
 from apps.errores.infraestructure.services.browser_capture import capture_browser_errors
 from apps.errores.infraestructure.services.browser_prober import probe_with_browser
 from apps.errores.infraestructure.services.prober import (
@@ -20,6 +25,8 @@ from apps.errores.presentation.serializers.error_serializer import (
     ProbarEndpointSerializer,
 )
 from shared.presentation.response import error_response, success_response
+
+logger = logging.getLogger(__name__)
 
 
 class ErrorViewSet(viewsets.ReadOnlyModelViewSet):
@@ -130,6 +137,36 @@ class ErrorViewSet(viewsets.ReadOnlyModelViewSet):
                 "browser_probe_error": browser_result["network_error"],
             }
         )
+
+    @action(detail=True, methods=["post"], url_path="diagnosticar")
+    def diagnosticar(self, request, pk=None):
+        """Pide a la IA una posible causa raíz y solución para este error, a
+        partir de la evidencia ya capturada (stack trace, contexto de la
+        petición). El resultado es una sugerencia para que el equipo revise,
+        no se aplica ningún cambio automáticamente. Se cachea en el propio
+        grupo; el frontend puede pedir "Regenerar" para forzar una nueva
+        llamada."""
+        group = self.get_object()
+
+        try:
+            diagnosis = generate_diagnosis(group)
+        except AiDiagnosisUnavailable as exc:
+            return error_response(str(exc), 503, "AI_DIAGNOSIS_UNAVAILABLE")
+        except Exception:
+            logger.exception(
+                "Fallo inesperado generando diagnóstico IA para %s", group.id
+            )
+            return error_response(
+                "Ocurrió un error inesperado generando el diagnóstico.",
+                502,
+                "AI_DIAGNOSIS_ERROR",
+            )
+
+        group.ai_diagnostico = diagnosis
+        group.ai_diagnostico_en = timezone.now()
+        group.save(update_fields=["ai_diagnostico", "ai_diagnostico_en"])
+
+        return success_response(ErrorGroupDetailSerializer(group).data)
 
     @staticmethod
     def _link_qa_ticket(group: ErrorGroupModel, qa_ticket_id) -> None:

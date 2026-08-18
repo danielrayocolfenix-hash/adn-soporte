@@ -14,11 +14,25 @@ export type QaEstado =
   | "rechazada"
   | "correccion"
   | "validacion_final"
-  | "cerrada";
+  | "cerrada"
+  | "reabierta";
 
 export interface ReproductionStep {
   id: string;
   step: string;
+}
+
+export interface QaEstadoHistorialEntry {
+  estado_anterior: QaEstado | null;
+  estado_nuevo: QaEstado;
+  usuario_nombre: string | null;
+  created_at: string;
+}
+
+export interface CasoPruebaRegresionResumen {
+  id: string;
+  nombre: string;
+  estado: string;
 }
 
 export interface QaRecord {
@@ -39,6 +53,9 @@ export interface QaRecord {
   responsable_nombre: string;
   prioridad: QaPrioridad;
   estado: QaEstado;
+  veces_reabierto: number;
+  historial_estados: QaEstadoHistorialEntry[];
+  casos_prueba_regresion: CasoPruebaRegresionResumen[];
   error_detalle: ErrorDetalle | null;
   created_at: string;
   updated_at: string;

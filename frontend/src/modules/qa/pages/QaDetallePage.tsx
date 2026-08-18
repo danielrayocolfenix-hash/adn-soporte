@@ -8,8 +8,10 @@ import {
   Layout,
   Loader2,
   Plus,
+  RotateCcw,
   Save,
   Smartphone,
+  Sparkles,
   Trash2,
   UserCheck,
   CheckSquare,
@@ -18,9 +20,20 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { ImageDropField } from "@/modules/qa/components/ImageDropField";
-import { useDeleteQa, useProbarEndpoint, useQaDetail, useUpdateQa } from "@/modules/qa/hooks/useQa";
-import type { QaFormValues, ReproductionStep } from "@/modules/qa/types/qa.types";
+import { CASO_ESTADO_LABELS, CASO_ESTADO_STYLES } from "@/modules/qa/constants/casoPrueba";
+import { ESTADO_LABELS, ESTADO_ORDER, ESTADO_STYLES } from "@/modules/qa/constants/estado";
+import {
+  useDeleteQa,
+  useDiagnosticarError,
+  useProbarEndpoint,
+  useQaDetail,
+  useUpdateQa,
+  useUpdateQaEstado,
+} from "@/modules/qa/hooks/useQa";
+import { useCreateCaso } from "@/modules/qa/hooks/usePruebaManual";
+import type { QaEstado, QaFormValues, ReproductionStep } from "@/modules/qa/types/qa.types";
 import { ErrorNivelBadge } from "@/modules/errores/components/ErrorNivelBadge";
+import { OccurrenceHistory } from "@/modules/errores/components/OccurrenceHistory";
 import { RequestContextPanel } from "@/modules/errores/components/RequestContextPanel";
 import { StackFrameList } from "@/modules/errores/components/StackFrameList";
 import { formatRelativeTime } from "@/shared/utils/formatRelativeTime";
@@ -54,11 +67,17 @@ export function QaDetallePage() {
   const updateQa = useUpdateQa(id ?? "");
   const deleteQa = useDeleteQa();
   const probar = useProbarEndpoint();
+  const diagnosticar = useDiagnosticarError();
+  const updateEstado = useUpdateQaEstado();
+  const createCaso = useCreateCaso();
 
   const [formData, setFormData] = useState<QaFormValues | null>(null);
   const [steps, setSteps] = useState<ReproductionStep[]>([]);
   const [loadedRecordId, setLoadedRecordId] = useState<string | null>(null);
   const [probeMessage, setProbeMessage] = useState<ProbeMessage | null>(null);
+  const [diagnosisError, setDiagnosisError] = useState<string | null>(null);
+  const [estadoError, setEstadoError] = useState<string | null>(null);
+  const [nuevaPruebaRegresion, setNuevaPruebaRegresion] = useState("");
 
   // Sincronización de estado derivada durante el render
   if (record && record.id !== loadedRecordId) {
@@ -150,6 +169,53 @@ export function QaDetallePage() {
     );
   };
 
+  const handleDiagnosticar = () => {
+    if (!id) return;
+    setDiagnosisError(null);
+    diagnosticar.mutate(id, {
+      onError: (err: unknown) => {
+        const message = isAxiosError(err)
+          ? (err.response?.data as { error?: { message?: string } } | undefined)?.error
+              ?.message
+          : undefined;
+        setDiagnosisError(message ?? "No fue posible generar el diagnóstico con IA.");
+      },
+    });
+  };
+
+  const handleEstadoChange = (estado: QaEstado) => {
+    if (!id) return;
+    setEstadoError(null);
+    updateEstado.mutate(
+      { id, estado },
+      {
+        onError: (err: unknown) => {
+          const message = isAxiosError(err)
+            ? (err.response?.data as { error?: { message?: string } } | undefined)?.error
+                ?.message
+            : undefined;
+          setEstadoError(message ?? "No fue posible cambiar el estado.");
+        },
+      },
+    );
+  };
+
+  const handleAgregarPruebaRegresion = (e: FormEvent) => {
+    e.preventDefault();
+    if (!id || !nuevaPruebaRegresion.trim()) return;
+    createCaso.mutate(
+      {
+        suite: null,
+        nombre: nuevaPruebaRegresion.trim(),
+        precondiciones: "",
+        pasos: "",
+        resultado_esperado: "",
+        qa_relacionado: id,
+      },
+      { onSuccess: () => setNuevaPruebaRegresion("") },
+    );
+  };
+
   const handleDelete = () => {
     if (!id || !record) return;
     if (
@@ -158,6 +224,8 @@ export function QaDetallePage() {
       deleteQa.mutate(id, { onSuccess: () => navigate("/qa") });
     }
   };
+
+  const esErrorAutomatico = record?.categoria === "server_error" && Boolean(record?.error_detalle);
 
   if (isLoading) {
     return (
@@ -251,11 +319,13 @@ export function QaDetallePage() {
 
             <p className="text-xs text-slate-500 dark:text-slate-400">
               Este ticket se generó automáticamente cuando el servidor lanzó esta excepción.
-              Usa el detalle de abajo para ubicar la causa y documenta la solución en
-              &quot;Comportamiento / Diseño Actual&quot; y el estado del ticket.
+              El contexto de la petición y el stack trace ya documentan cómo reproducirlo —
+              usa el campo de solución más abajo para registrar el fix aplicado.
             </p>
 
             <RequestContextPanel error={record.error_detalle} />
+
+            <OccurrenceHistory timestamps={record.error_detalle.ocurrencias_recientes} />
 
             <div>
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
@@ -263,9 +333,196 @@ export function QaDetallePage() {
               </label>
               <StackFrameList frames={record.error_detalle.stack_frames} />
             </div>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-indigo-500" />
+                  <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Diagnóstico con IA
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDiagnosticar}
+                  disabled={diagnosticar.isPending}
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition-all disabled:opacity-50 shrink-0"
+                >
+                  {diagnosticar.isPending ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Sparkles size={16} />
+                  )}
+                  {diagnosticar.isPending
+                    ? "Analizando..."
+                    : record.error_detalle.ai_diagnostico
+                      ? "Regenerar"
+                      : "Analizar con IA"}
+                </button>
+              </div>
+
+              <p className="text-[11px] text-slate-400 mb-3">
+                Sugerencia generada automáticamente a partir de la evidencia capturada. Revísala
+                antes de aplicar cualquier cambio — no reemplaza el criterio del equipo.
+              </p>
+
+              {diagnosisError && (
+                <p className="text-xs text-rose-600 dark:text-rose-400 mb-3">{diagnosisError}</p>
+              )}
+
+              {record.error_detalle.ai_diagnostico && (
+                <div className="space-y-3 p-4 rounded-xl bg-indigo-500/5 border border-indigo-500/20">
+                  <div className="flex items-center justify-between gap-2">
+                    <span
+                      className={`text-[11px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide ${
+                        record.error_detalle.ai_diagnostico.confianza === "alta"
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : record.error_detalle.ai_diagnostico.confianza === "media"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                            : "bg-rose-500/10 text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      Confianza {record.error_detalle.ai_diagnostico.confianza}
+                    </span>
+                    {record.error_detalle.ai_diagnostico_en && (
+                      <span className="text-[11px] text-slate-400">
+                        Generado {formatRelativeTime(record.error_detalle.ai_diagnostico_en)}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                      Causa raíz
+                    </p>
+                    <p className="text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap">
+                      {record.error_detalle.ai_diagnostico.causa_raiz}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                      Solución sugerida
+                    </p>
+                    <p className="text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap">
+                      {record.error_detalle.ai_diagnostico.solucion_sugerida}
+                    </p>
+                  </div>
+
+                  {record.error_detalle.ai_diagnostico.codigo_sugerido && (
+                    <div>
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                        Código sugerido
+                      </p>
+                      <pre className="text-xs bg-slate-900 text-slate-100 rounded-lg p-3 overflow-x-auto">
+                        <code>{record.error_detalle.ai_diagnostico.codigo_sugerido}</code>
+                      </pre>
+                    </div>
+                  )}
+
+                  {record.error_detalle.ai_diagnostico.advertencia && (
+                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                      {record.error_detalle.ai_diagnostico.advertencia}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                Solución aplicada
+              </label>
+              <textarea
+                rows={3}
+                value={formData.resultado_obtenido}
+                onChange={(e) =>
+                  setFormData((prev) => (prev ? { ...prev, resultado_obtenido: e.target.value } : null))
+                }
+                placeholder="Describe el fix aplicado (o el motivo por el que se descartó). Se guarda con el ticket."
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-rose-500 resize-none transition-all"
+              />
+            </div>
           </div>
         </div>
       )}
+
+      {record.historial_estados.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Historial de estado
+          </label>
+          <div className="space-y-2">
+            {record.historial_estados.map((entrada, index) => (
+              <div
+                key={`${entrada.created_at}-${index}`}
+                className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300"
+              >
+                <span className="text-slate-400 shrink-0 w-32">
+                  {new Date(entrada.created_at).toLocaleString("es-CO", {
+                    day: "2-digit",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
+                <span className="font-mono text-[11px]">
+                  {entrada.estado_anterior ? ESTADO_LABELS[entrada.estado_anterior] : "—"}
+                  <span className="text-slate-400"> → </span>
+                  {ESTADO_LABELS[entrada.estado_nuevo]}
+                </span>
+                <span className="text-slate-400 ml-auto shrink-0">
+                  {entrada.usuario_nombre ?? "Sistema (monitor)"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
+        <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          Pruebas de regresión
+        </label>
+        <p className="text-xs text-slate-400">
+          Qué se debe volver a probar para confirmar que este problema no reaparece.
+        </p>
+
+        {record.casos_prueba_regresion.length > 0 && (
+          <div className="space-y-1.5">
+            {record.casos_prueba_regresion.map((caso) => (
+              <div key={caso.id} className="flex items-center gap-2 text-sm">
+                <span className="text-slate-700 dark:text-slate-300 flex-1 truncate">
+                  {caso.nombre}
+                </span>
+                <span
+                  className={`shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase ${CASO_ESTADO_STYLES[caso.estado as keyof typeof CASO_ESTADO_STYLES] ?? CASO_ESTADO_STYLES.not_tested}`}
+                >
+                  {CASO_ESTADO_LABELS[caso.estado as keyof typeof CASO_ESTADO_LABELS] ?? caso.estado}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={handleAgregarPruebaRegresion} className="flex items-center gap-2 pt-1">
+          <input
+            type="text"
+            placeholder="Ej: Verificar que /dashboard carga sin error"
+            value={nuevaPruebaRegresion}
+            onChange={(e) => setNuevaPruebaRegresion(e.target.value)}
+            className="flex-1 px-3.5 py-2 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:border-indigo-500 transition-all"
+          />
+          <button
+            type="submit"
+            disabled={createCaso.isPending || !nuevaPruebaRegresion.trim()}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl transition-all disabled:opacity-40 shrink-0"
+          >
+            {createCaso.isPending ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+            Agregar
+          </button>
+        </form>
+      </div>
 
       <form id="qa-detalle-form" onSubmit={handleSubmit} className="space-y-6">
         {/* SECCIÓN 1: Categoría */}
@@ -421,15 +678,36 @@ export function QaDetallePage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                 Estado actual
+                {updateEstado.isPending && <Loader2 size={12} className="animate-spin text-slate-400" />}
               </label>
-              <input
-                type="text"
-                disabled
+              <select
                 value={record.estado}
-                className="w-full px-3.5 py-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-500 dark:text-slate-400 cursor-not-allowed"
-              />
+                onChange={(e) => handleEstadoChange(e.target.value as QaEstado)}
+                disabled={updateEstado.isPending}
+                className={`w-full px-3.5 py-2 rounded-xl border text-sm font-medium focus:outline-none transition-all disabled:opacity-60 ${ESTADO_STYLES[record.estado]}`}
+              >
+                {ESTADO_ORDER.map((estado) => (
+                  <option key={estado} value={estado}>
+                    {ESTADO_LABELS[estado]}
+                  </option>
+                ))}
+              </select>
+              {estadoError && (
+                <p className="mt-1.5 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                  <AlertTriangle size={12} className="shrink-0" />
+                  {estadoError}
+                </p>
+              )}
+              {record.veces_reabierto > 0 && (
+                <p className="mt-1.5 text-xs text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                  <RotateCcw size={12} className="shrink-0" />
+                  Reabierto {record.veces_reabierto}{" "}
+                  {record.veces_reabierto === 1 ? "vez" : "veces"} por regresión detectada
+                  automáticamente.
+                </p>
+              )}
             </div>
 
             {formData.categoria === "ui_design" && (
@@ -468,7 +746,7 @@ export function QaDetallePage() {
               </div>
             )}
 
-            {formData.categoria === "server_error" && (
+            {formData.categoria === "server_error" && !esErrorAutomatico && (
               <div className="md:col-span-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
                   <ServerCrash size={14} className="text-rose-500" />
@@ -522,7 +800,8 @@ export function QaDetallePage() {
           </div>
         </div>
 
-        {/* SECCIÓN 3: Pasos para Reproducir */}
+        {/* SECCIÓN 3: Pasos para Reproducir (se fusiona con el diagnóstico automático cuando este existe) */}
+        {!esErrorAutomatico && (
         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
             <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -591,6 +870,7 @@ export function QaDetallePage() {
             </div>
           </div>
         </div>
+        )}
 
         {/* SECCIÓN 4: Evidencia Visual (solo Diseño / UI) */}
         {formData.categoria === "ui_design" && (

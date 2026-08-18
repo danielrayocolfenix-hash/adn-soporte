@@ -13,6 +13,7 @@ from apps.errores.infraestructure.services.frames import (
 )
 from apps.errores.infraestructure.services.qa_link import (
     create_linked_qa_ticket,
+    escalar_prioridad_si_recurrente,
     reopen_qa_ticket_if_resolved,
     resolve_responsable,
 )
@@ -33,7 +34,10 @@ def capture_exception(exc: BaseException, context: dict):
     `shared/presentation/exception_handler.py`): un fallo aquí nunca debe
     impedir que el cliente reciba la respuesta 500 original.
     """
-    from apps.errores.infraestructure.models.error_model import ErrorGroupModel
+    from apps.errores.infraestructure.models.error_model import (
+        ErrorGroupModel,
+        append_occurrence,
+    )
 
     request = context.get("request")
     fingerprint = compute_fingerprint(exc)
@@ -71,7 +75,12 @@ def capture_exception(exc: BaseException, context: dict):
     with transaction.atomic():
         group, created = ErrorGroupModel.objects.select_for_update().get_or_create(
             fingerprint=fingerprint,
-            defaults={**rolling_fields, "count": 1, "first_seen": now},
+            defaults={
+                **rolling_fields,
+                "count": 1,
+                "first_seen": now,
+                "ocurrencias_recientes": [now.isoformat()],
+            },
         )
         if created:
             create_linked_qa_ticket(group, resolve_responsable(user))
@@ -79,8 +88,14 @@ def capture_exception(exc: BaseException, context: dict):
             for field, value in rolling_fields.items():
                 setattr(group, field, value)
             group.count = group.count + 1
-            group.save(update_fields=[*rolling_fields.keys(), "count"])
+            group.ocurrencias_recientes = append_occurrence(
+                group.ocurrencias_recientes, now
+            )
+            group.save(
+                update_fields=[*rolling_fields.keys(), "count", "ocurrencias_recientes"]
+            )
             if group.qa_ticket_id:
                 reopen_qa_ticket_if_resolved(group.qa_ticket)
+                escalar_prioridad_si_recurrente(group.qa_ticket, group.count)
 
     return group

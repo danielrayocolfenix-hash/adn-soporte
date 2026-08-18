@@ -45,6 +45,9 @@ class QaModel(models.Model):
         choices=[(e.value, e.name) for e in EstadoQa],
         default=EstadoQa.NUEVA.value,
     )
+    # Cuántas veces el monitor detectó que este problema, ya dado por
+    # resuelto, volvió a ocurrir (ver `qa_link.reopen_qa_ticket_if_resolved`).
+    veces_reabierto = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

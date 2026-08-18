@@ -75,6 +75,7 @@ def test_misma_url_y_mensaje_incrementan_el_mismo_grupo(user):
 
     assert ErrorGroupModel.objects.count() == 1
     assert group.count == 2
+    assert len(group.ocurrencias_recientes) == 2
 
 
 @pytest.mark.django_db

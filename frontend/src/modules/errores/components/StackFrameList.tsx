@@ -28,6 +28,7 @@ function FrameItem({ frame, index }: { frame: StackFrame; index: number }) {
         <div className="min-w-0 flex-1">
           <p className="truncate text-xs font-mono text-slate-700 dark:text-slate-300">
             {frame.file}:{frame.line}
+            {frame.column != null && `:${frame.column}`}
             <span className="text-slate-400 dark:text-slate-500"> en </span>
             {frame.function}
           </p>

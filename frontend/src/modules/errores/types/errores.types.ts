@@ -8,10 +8,19 @@ export interface StackFrameContextLine {
 export interface StackFrame {
   file: string;
   line: number;
+  column: number | null;
   function: string;
   code_context: string;
   context_lines: StackFrameContextLine[];
   in_app: boolean;
+}
+
+export interface AiDiagnostico {
+  causa_raiz: string;
+  solucion_sugerida: string;
+  codigo_sugerido: string;
+  confianza: "alta" | "media" | "baja";
+  advertencia: string;
 }
 
 /** Diagnóstico automático embebido en un QaRecord (categoría server_error). */
@@ -34,7 +43,10 @@ export interface ErrorDetalle {
   count: number;
   first_seen: string;
   last_seen: string;
+  ocurrencias_recientes: string[];
   qa_ticket: string | null;
+  ai_diagnostico: AiDiagnostico | null;
+  ai_diagnostico_en: string | null;
 }
 
 export interface ProbeResult {

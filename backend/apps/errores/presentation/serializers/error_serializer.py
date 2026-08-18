@@ -53,6 +53,9 @@ class ErrorGroupDetailSerializer(serializers.ModelSerializer):
             "count",
             "first_seen",
             "last_seen",
+            "ocurrencias_recientes",
             "qa_ticket",
+            "ai_diagnostico",
+            "ai_diagnostico_en",
         ]
         read_only_fields = fields

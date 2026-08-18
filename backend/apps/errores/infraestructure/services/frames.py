@@ -3,7 +3,7 @@ import traceback
 
 from apps.errores.infraestructure.services.fingerprint import is_in_app, relative_path
 
-_CONTEXT_RADIUS = 2
+_CONTEXT_RADIUS = 6
 
 
 def _context_lines(filename: str, lineno: int) -> list[dict]:
@@ -26,6 +26,7 @@ def extract_frames(exc: BaseException) -> list[dict]:
             {
                 "file": relative_path(frame_summary.filename),
                 "line": frame_summary.lineno,
+                "column": getattr(frame_summary, "colno", None),
                 "function": frame_summary.name,
                 "code_context": (frame_summary.line or "").strip(),
                 "context_lines": _context_lines(
